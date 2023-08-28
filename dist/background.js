@@ -7,7 +7,7 @@ chrome.runtime.onInstalled.addListener(function (details) {
     //call a function to handle an update
   }
 }), chrome.runtime.setUninstallURL("https://www.anhnbt.com/ky-tu-dac-biet");
-const DEFAULT_POMODORO_MINUTES = 1;
+const DEFAULT_POMODORO_MINUTES = 25;
 let timer;
 let minutes;
 let seconds;

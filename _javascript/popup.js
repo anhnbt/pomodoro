@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   console.log("Pomodoro Vietnam!");
-  const DEFAULT_POMODORO_MINUTES = 1;
+  const DEFAULT_POMODORO_MINUTES = 25;
   const startButton = document.getElementById("startButton");
   const resetButton = document.getElementById("resetButton");
   const minutesDisplay = document.getElementById("minutes");
