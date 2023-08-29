@@ -62,19 +62,15 @@ function resetBackgroundTimer() {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "startTimer") {
     startBackgroundTimer();
-    console.log("startTimer được gọi");
   } else if (request.action === "stopTimer") {
     clearInterval(timer);
     isTimerRunning = false;
-    console.log("stopTimer được gọi");
     // Thực hiện các xử lý khác cần thiết
   } else if (request.action === "resetTimer") {
     resetBackgroundTimer();
-    console.log("resetTimer được gọi");
   } else if (request.action === "pauseTimer") {
     clearInterval(timer);
     isTimerRunning = false;
-    console.log("pauseTimer được gọi");
     // Thực hiện các xử lý khác cần thiết
   }
 });

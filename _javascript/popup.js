@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("Pomodoro Vietnam!");
   const DEFAULT_POMODORO_MINUTES = 25;
   const startButton = document.getElementById("startButton");
   const resetButton = document.getElementById("resetButton");
@@ -16,12 +15,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function toggleTimer() {
     if (isTimerRunning) {
-      console.log("Tạm dừng");
       chrome.runtime.sendMessage({ action: "pauseTimer" }); // Gửi thông điệp để tạm dừng thời gian
       isTimerRunning = false; // Đặt trạng thái timer về tạm dừng
       startButton.textContent = "Bắt đầu"; // Đổi nút sang 'Start'
     } else {
-      console.log("Bắt đầu");
       if (minutes === 0 && seconds === 0) {
         minutes = DEFAULT_POMODORO_MINUTES;
         seconds = 0;
@@ -45,7 +42,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (request.action === "timerCompleted") {
       isTimerRunning = false; // Đặt lại trạng thái timer
       startButton.textContent = "Bắt đầu"; // Đổi nút về 'Start' khi hoàn thành
-      console.log("Pomodoro session completed!");
       // Đặt lại thời gian về mặc định
       minutes = DEFAULT_POMODORO_MINUTES;
       seconds = 0;
