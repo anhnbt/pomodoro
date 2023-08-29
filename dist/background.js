@@ -20,9 +20,12 @@ chrome.storage.local.get(["pomodoroMinutes", "pomodoroSeconds"], result => {
 });
 
 function updateTimerDisplay() {
-  chrome.runtime.sendMessage({ action: "updateDisplay", minutes, seconds });
+  chrome.runtime.sendMessage({
+    action: "updateDisplay",
+    minutes,
+    seconds
+  });
 }
-
 function startBackgroundTimer() {
   timer = setInterval(() => {
     if (seconds > 0) {
@@ -33,7 +36,9 @@ function startBackgroundTimer() {
         seconds = 59;
       } else {
         clearInterval(timer);
-        chrome.runtime.sendMessage({ action: "timerCompleted" });
+        chrome.runtime.sendMessage({
+          action: "timerCompleted"
+        });
         playSound();
       }
     }
@@ -41,14 +46,12 @@ function startBackgroundTimer() {
     updateTimerDisplay(); // Cập nhật giá trị trên giao diện sau mỗi tick
   }, 1000);
 }
-
 function saveTimerToStorage() {
   chrome.storage.local.set({
     pomodoroMinutes: minutes,
     pomodoroSeconds: seconds
   });
 }
-
 function resetBackgroundTimer() {
   clearInterval(timer);
   minutes = DEFAULT_POMODORO_MINUTES;
@@ -61,19 +64,15 @@ function resetBackgroundTimer() {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "startTimer") {
     startBackgroundTimer();
-    console.log("startTimer được gọi");
   } else if (request.action === "stopTimer") {
     clearInterval(timer);
     isTimerRunning = false;
-    console.log("stopTimer được gọi");
     // Thực hiện các xử lý khác cần thiết
   } else if (request.action === "resetTimer") {
     resetBackgroundTimer();
-    console.log("resetTimer được gọi");
   } else if (request.action === "pauseTimer") {
     clearInterval(timer);
     isTimerRunning = false;
-    console.log("pauseTimer được gọi");
     // Thực hiện các xử lý khác cần thiết
   }
 });
@@ -85,7 +84,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
  */
 async function playSound(source = "audio/casio-watch.mp3", volume = 1) {
   await createOffscreen();
-  await chrome.runtime.sendMessage({ play: { source, volume } });
+  await chrome.runtime.sendMessage({
+    play: {
+      source,
+      volume
+    }
+  });
 }
 
 // Create the offscreen document if it doesn't already exist
