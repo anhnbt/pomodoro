@@ -3,7 +3,7 @@
   "name": "__MSG_appName__",
   "short_name": "PomodoroVN",
   "description": "__MSG_appDesc__",
-  "version": "1.0",
+  "version": "1.1",
   "author": "Nguyễn Bá Tuấn Anh",
   "homepage_url": "https://www.anhnbt.com/",
   "permissions": ["activeTab", "storage", "offscreen"],
