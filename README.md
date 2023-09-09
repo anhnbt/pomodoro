@@ -16,10 +16,5 @@ Tiện ích Pomodoro - đồng hồ đếm ngược giúp tập trung học bài
 ```shell
 # install dependencies
 npm i
-npm i -g babel-cli
 # build Pomodoro Vietnam for production
-npm run deploy
-# or
-npm run js-build
-npm run css-build
-```
+npm run build

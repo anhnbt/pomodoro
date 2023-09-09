@@ -1,30 +1,30 @@
-chrome.runtime.onInstalled.addListener(function (details) {
-  if (details.reason == "install") {
-    chrome.tabs.create({
-      url: "https://www.anhnbt.com/ky-tu-dac-biet",
-    });
-  } else if (details.reason == "update") {
-    //call a function to handle an update
-  }
-}),
-  chrome.runtime.setUninstallURL("https://www.anhnbt.com/ky-tu-dac-biet");
+/*global chrome*/
 const DEFAULT_POMODORO_MINUTES = 25;
 let timer;
 let minutes;
 let seconds;
-let isTimerRunning = false;
-chrome.storage.local.get(["pomodoroMinutes", "pomodoroSeconds"], (result) => {
-  minutes = result.pomodoroMinutes || DEFAULT_POMODORO_MINUTES;
-  seconds = result.pomodoroSeconds || 0;
-  updateTimerDisplay(); // Cập nhật giá trị trên giao diện khi tải xong
-  //startBackgroundTimer();
-});
+let isRunning = false;
+chrome.storage.local.get(
+  ["pomodoroMinutes", "pomodoroSeconds", "isRunning"],
+  (result) => {
+    minutes = result.pomodoroMinutes || DEFAULT_POMODORO_MINUTES;
+    seconds = result.pomodoroSeconds || 0;
+    isRunning = result.isRunning || false;
+    updateTimerDisplay(); // Cập nhật giá trị trên giao diện khi tải xong
+    //startBackgroundTimer();
+  }
+);
 
 function updateTimerDisplay() {
-  chrome.runtime.sendMessage({ action: "updateDisplay", minutes, seconds });
+  chrome.runtime.sendMessage({
+    action: "updateDisplay",
+    minutes,
+    seconds,
+    isRunning,
+  });
 }
-
 function startBackgroundTimer() {
+  console.log("start time");
   timer = setInterval(() => {
     if (seconds > 0) {
       seconds--;
@@ -34,7 +34,9 @@ function startBackgroundTimer() {
         seconds = 59;
       } else {
         clearInterval(timer);
-        chrome.runtime.sendMessage({ action: "timerCompleted" });
+        chrome.runtime.sendMessage({
+          action: "timerCompleted",
+        });
         playSound();
       }
     }
@@ -42,35 +44,36 @@ function startBackgroundTimer() {
     updateTimerDisplay(); // Cập nhật giá trị trên giao diện sau mỗi tick
   }, 1000);
 }
-
 function saveTimerToStorage() {
+    // Lưu trạng thái isRunning, minutes, seconds vào chrome.storage
   chrome.storage.local.set({
     pomodoroMinutes: minutes,
     pomodoroSeconds: seconds,
+    isRunning: isRunning,
   });
 }
-
 function resetBackgroundTimer() {
   clearInterval(timer);
   minutes = DEFAULT_POMODORO_MINUTES;
   seconds = 0;
-  isTimerRunning = false;
+  isRunning = false;
   saveTimerToStorage();
   updateTimerDisplay(); // Cập nhật hiển thị sau khi đặt lại thời gian
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "startTimer") {
+    isRunning = true;
     startBackgroundTimer();
   } else if (request.action === "stopTimer") {
     clearInterval(timer);
-    isTimerRunning = false;
+    isRunning = false;
     // Thực hiện các xử lý khác cần thiết
   } else if (request.action === "resetTimer") {
     resetBackgroundTimer();
   } else if (request.action === "pauseTimer") {
     clearInterval(timer);
-    isTimerRunning = false;
+    isRunning = false;
     // Thực hiện các xử lý khác cần thiết
   }
 });
@@ -82,7 +85,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
  */
 async function playSound(source = "audio/casio-watch.mp3", volume = 1) {
   await createOffscreen();
-  await chrome.runtime.sendMessage({ play: { source, volume } });
+  await chrome.runtime.sendMessage({
+    play: {
+      source,
+      volume,
+    },
+  });
 }
 
 // Create the offscreen document if it doesn't already exist

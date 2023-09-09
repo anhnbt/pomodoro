@@ -7,27 +7,45 @@
   "author": "Nguyễn Bá Tuấn Anh <anhnbt.it@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "bulma": "^0.9.4"
-  },
-  "devDependencies": {
-    "@babel/cli": "^7.22.5",
-    "@babel/core": "^7.22.11",
-    "@babel/preset-env": "^7.22.5",
-    "autoprefixer": "^10.4.14",
-    "bulma": "^0.9.4",
-    "npm-run-all": "^4.1.5",
-    "postcss": "^8.4.28",
-    "postcss-cli": "^10.1.0",
-    "sass": "^1.63.6"
+    "@emotion/core": "^11.0.0",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@fontsource/roboto": "^5.0.8",
+    "@mui/icons-material": "^5.14.8",
+    "@mui/material": "^5.14.8",
+    "@mui/styled-engine-sc": "^5.14.8",
+    "@mui/system": "^5.14.8",
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1",
+    "styled-components": "^5.3.11",
+    "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "css-deploy": "npm run css-build && npm run css-postcss",
-    "css-build": "sass --no-source-map _sass/main.scss:main.css",
-    "css-postcss": "postcss --use autoprefixer -o main.css dist/css/*.css",
-    "css-watch": "npm run css-build -- --watch",
-    "deploy": "npm run css-deploy && npm run js-build",
-    "js-build": "babel _javascript --out-dir dist",
-    "js-watch": "npm run js-build -- --watch",
-    "start": "npm-run-all --parallel css-watch js-watch"
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }

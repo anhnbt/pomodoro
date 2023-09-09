@@ -1,10 +1,11 @@
 {
   "manifest_version": 3,
-  "name": "Pomodoro Vietnam",
+  "name": "__MSG_appName__",
   "short_name": "PomodoroVN",
-  "description": "Tiện ích Pomodoro - đồng hồ đếm ngược giúp tập trung học bài trong 25 phút",
+  "description": "__MSG_appDesc__",
   "version": "1.0",
   "author": "Nguyễn Bá Tuấn Anh",
+  "homepage_url": "https://www.anhnbt.com/",
   "permissions": ["activeTab", "storage", "offscreen"],
   "background": {
     "service_worker": "background.js"
@@ -16,7 +17,7 @@
     "128": "images/icon128.png"
   },
   "action": {
-    "default_popup": "popup.html",
+    "default_popup": "index.html",
     "default_icon": {
       "16": "images/icon16.png",
       "32": "images/icon32.png",
@@ -24,5 +25,5 @@
       "128": "images/icon128.png"
     }
   },
-  "update_url": "https://clients2.google.com/service/update2/crx"
+  "default_locale": "vi"
 }
