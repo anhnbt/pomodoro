@@ -66,7 +66,6 @@ function Pomodoro() {
         mt={2}
         sx={{
           bgcolor: "background.paper",
-          pt: 2,
           pb: 2,
           display: "flex",
           flexDirection: "column",
