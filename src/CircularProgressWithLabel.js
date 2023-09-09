@@ -4,9 +4,10 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 
 export default function CircularProgressWithLabel(props) {
+
   return (
-    <Box sx={{ position: "relative", display: "inline-flex" }}>
-      <CircularProgress size={'10rem'} variant="determinate" {...props} />
+    <Box sx={{ position: "relative", py: 2, display: "inline-flex" }}>
+      <CircularProgress color="secondary" size={"20rem"} thickness={1} variant="determinate" {...props} />
       <Box
         sx={{
           top: 0,
@@ -19,7 +20,7 @@ export default function CircularProgressWithLabel(props) {
           justifyContent: "center",
         }}
       >
-        <Typography variant="h3" component="div" color="text.primary">
+        <Typography variant="timer" component="div" color="secondary">
           {props.minutes.toString().padStart(2, "0")}:
           {props.seconds.toString().padStart(2, "0")}
         </Typography>

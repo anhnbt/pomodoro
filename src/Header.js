@@ -21,7 +21,7 @@ export default function Header() {
     <div>
       <AppBar position="static">
         <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          <Typography variant="h6" component="h1" sx={{ flexGrow: 1 }}>
             Pomodoro Vietnam
           </Typography>
           <IconButton
