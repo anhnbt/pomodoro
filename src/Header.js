@@ -6,7 +6,7 @@ import IconButton from "@mui/material/IconButton";
 import Settings from "./Settings";
 import SettingsIcon from "@mui/icons-material/Settings";
 
-export default function Header() {
+export default function Header(props) {
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -19,7 +19,10 @@ export default function Header() {
 
   return (
     <div>
-      <AppBar position="static">
+      <AppBar position="static"
+        sx={{
+          backgroundColor: `${props.mode}.main`,
+        }}>
         <Toolbar>
           <Typography variant="h6" component="h1" sx={{ flexGrow: 1 }}>
             Pomodoro Vietnam

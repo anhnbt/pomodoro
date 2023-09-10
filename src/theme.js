@@ -16,7 +16,7 @@ const theme = createTheme({
       '"Segoe UI Symbol"',
     ].join(","),
     timer: {
-      fontSize: 120,
+      fontSize: 110,
       fontWeight: "bold",
     },
   },
@@ -27,6 +27,15 @@ const theme = createTheme({
     },
     secondary: {
       main: "#ffffff",
+    },
+    pomodoro: {
+      main: "#ba4949",
+    },
+    shortBreak: {
+      main: "rgb(70, 142, 145)",
+    },
+    longBreak: {
+      main: "rgb(67, 126, 168)",
     },
   }
 });

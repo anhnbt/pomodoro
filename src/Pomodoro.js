@@ -7,6 +7,33 @@ import Link from "@mui/material/Link";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import { styled } from "@mui/material/styles";
+import Header from "./Header";
+import {
+  POMODORO,
+  SHORT_BREAK,
+  LONG_BREAK,
+  TIME_FOR_A_BREAK,
+  TIME_TO_FOCUS,
+  POMODORO_TIME,
+  SHORT_BREAK_TIME,
+  LONG_BREAK_TIME,
+  START,
+  PAUSE,
+  RESET,
+  DIGITAL_SOUND
+} from "./constants";
+import { updateTitle } from "./helpers";
+import { player } from "./player";
+
+const buttonSound = player({
+  asset: "audio/button-press.wav",
+  volume: 0.5,
+});
+
+const alarmAudio = player({
+  asset: DIGITAL_SOUND,
+  volume: 0.5,
+});
 
 const StyledTabs = styled((props) => (
   <Tabs
@@ -39,19 +66,33 @@ const StyledTab = styled((props) => <Tab disableRipple {...props} />)(
 );
 
 function Pomodoro() {
-  const POMODORO_TIME = 25;
-  const SHORT_BREAK_TIME = 5;
-  const LONG_BREAK_TIME = 15;
   const [minutes, setMinutes] = useState(POMODORO_TIME); // Khai báo giá trị ban đầu cho minutes
   const [seconds, setSeconds] = useState(0); // Khai báo giá trị ban đầu cho seconds
   const [isRunning, setIsRunning] = useState(false); // Thêm biến để theo dõi trạng thái của timer
-  const [mode, setMode] = useState("pomodoro"); // Mặc định là Pomodoro
+  const [mode, setMode] = useState(POMODORO); // Mặc định là Pomodoro
   const [progressBarValue, setProgressBarValue] = useState(0);
+
+  useEffect(() => {
+    // Xin quyền thông báo khi component được tạo lần đầu
+    if (
+      Notification.permission !== "granted" &&
+      Notification.permission !== "denied"
+    ) {
+      Notification.requestPermission().then((permission) => {
+        if (permission === "granted") {
+          console.log("Quyền thông báo đã được cấp.");
+        } else {
+          console.log("Quyền thông báo bị từ chối.");
+        }
+      });
+    }
+  }, []); // [] đảm bảo rằng useEffect chỉ chạy một lần khi component được tạo ra lần đầu
 
   useEffect(() => {
     let timerInterval;
     let totalSeconds;
     let totalSecondsInMode;
+    let notification;
 
     if (isRunning) {
       timerInterval = setInterval(() => {
@@ -61,26 +102,45 @@ function Pomodoro() {
           setProgressBarValue(0); // Cập nhật giá trị progressBarValue
 
           switch (mode) {
-            case "pomodoro":
+            case POMODORO:
               setMinutes(POMODORO_TIME);
               setSeconds(0);
+
+              // Gửi thông báo
+              notification = new Notification("Pomodoro đã hoàn thành", {
+                body: "Đã đến lúc phải nghỉ ngơi!",
+                icon: "images/logo512.png",
+                dir: "ltr",
+              });
               break;
-            case "shortBreak":
+            case SHORT_BREAK:
               setMinutes(SHORT_BREAK_TIME);
               setSeconds(0);
+
+              // Gửi thông báo
+              notification = new Notification("Nghỉ ngắn đã hoàn thành", {
+                body: "Đã đến lúc tập trung!",
+                icon: "images/logo512.png",
+                dir: "ltr",
+              });
               break;
-            case "longBreak":
+            case LONG_BREAK:
               setMinutes(LONG_BREAK_TIME);
               setSeconds(0);
+
+              // Gửi thông báo
+              notification = new Notification("Nghỉ dài đã hoàn thành", {
+                body: "Đã đến lúc tập trung!",
+                icon: "images/logo512.png",
+                dir: "ltr",
+              });
               break;
             default:
               break;
           }
 
           // Phát âm thanh kết thúc Pomodoro
-          const audio = new Audio("audio/casio-watch.mp3");
-          audio.play();
-          // alert("Pomodoro Finished! Take a break.");
+          alarmAudio.play();
         } else if (seconds === 0) {
           setMinutes((prevMinutes) => prevMinutes - 1);
           setSeconds(59);
@@ -88,17 +148,17 @@ function Pomodoro() {
           setSeconds((prevSeconds) => prevSeconds - 1);
         }
         switch (mode) {
-          case "pomodoro":
+          case POMODORO:
             totalSeconds = minutes * 60 + seconds;
             totalSecondsInMode = POMODORO_TIME * 60; // 25 phút cho Pomodoro
             break;
-          case "shortBreak":
+          case SHORT_BREAK:
             totalSeconds =
               SHORT_BREAK_TIME * 60 -
               (SHORT_BREAK_TIME * 60 - (minutes * 60 + seconds)); // Thời gian thực tế đã trôi qua trong 5 phút nghỉ ngắn
             totalSecondsInMode = SHORT_BREAK_TIME * 60; // 5 phút cho Short Break
             break;
-          case "longBreak":
+          case LONG_BREAK:
             totalSeconds =
               LONG_BREAK_TIME * 60 -
               (LONG_BREAK_TIME * 60 - (minutes * 60 + seconds)); // Thời gian thực tế đã trôi qua trong 15 phút nghỉ dài
@@ -117,7 +177,12 @@ function Pomodoro() {
     return () => clearInterval(timerInterval);
   }, [isRunning, minutes, seconds, mode]);
 
+  useEffect(() => {
+    updateTitle(minutes, seconds, mode);
+  }, [mode, minutes, seconds]);
+
   const toggleTimer = () => {
+    buttonSound.play();
     if (isRunning) {
       setIsRunning(false); // Đặt trạng thái timer về tạm dừng
     } else {
@@ -131,10 +196,23 @@ function Pomodoro() {
   };
 
   const resetTimer = () => {
+    buttonSound.play();
     setIsRunning(false); // Đặt lại trạng thái timer
 
     // Cập nhật thời gian
-    setMinutes(minutes);
+    switch (mode) {
+      case POMODORO:
+        setMinutes(POMODORO_TIME);
+        break;
+      case SHORT_BREAK:
+        setMinutes(SHORT_BREAK_TIME);
+        break;
+      case LONG_BREAK:
+        setMinutes(LONG_BREAK_TIME);
+        break;
+      default:
+        break;
+    }
     setSeconds(0);
 
     // Cập nhật giá trị progressBarValue
@@ -146,15 +224,15 @@ function Pomodoro() {
     let defaultMinutes;
     let defaultSeconds;
     switch (newMode) {
-      case "pomodoro":
+      case POMODORO:
         defaultMinutes = POMODORO_TIME;
         defaultSeconds = 0;
         break;
-      case "shortBreak":
+      case SHORT_BREAK:
         defaultMinutes = SHORT_BREAK_TIME;
         defaultSeconds = 0;
         break;
-      case "longBreak":
+      case LONG_BREAK:
         defaultMinutes = LONG_BREAK_TIME;
         defaultSeconds = 0;
         break;
@@ -176,6 +254,7 @@ function Pomodoro() {
 
   return (
     <main>
+      <Header mode={mode} />
       <Box
         sx={{
           py: 2,
@@ -183,7 +262,7 @@ function Pomodoro() {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          backgroundColor: "primary.main",
+          backgroundColor: `${mode}.main`,
         }}
       >
         <StyledTabs
@@ -193,9 +272,9 @@ function Pomodoro() {
           onChange={switchMode}
           centered
         >
-          <StyledTab value={"pomodoro"} label="Pomodoro" />
-          <StyledTab value={"shortBreak"} label="Nghỉ ngắn" />
-          <StyledTab value={"longBreak"} label="Nghỉ dài" />
+          <StyledTab value={POMODORO} label="Pomodoro" />
+          <StyledTab value={SHORT_BREAK} label="Nghỉ ngắn" />
+          <StyledTab value={LONG_BREAK} label="Nghỉ dài" />
         </StyledTabs>
         <CircularProgressWithLabel
           minutes={minutes}
@@ -210,12 +289,23 @@ function Pomodoro() {
             onClick={toggleTimer}
             color="secondary"
           >
-            {isRunning ? "Tạm dừng" : "Bắt đầu"}
+            {isRunning ? PAUSE : START}
           </Button>
           <Button onClick={resetTimer} size="large" color="secondary">
-            Đặt lại
+            {RESET}
           </Button>
         </Stack>
+        <Typography
+          sx={{
+            mt: 2,
+          }}
+          variant="overline"
+          display="block"
+          gutterBottom
+          color="secondary"
+        >
+          {mode === POMODORO ? TIME_TO_FOCUS : TIME_FOR_A_BREAK}
+        </Typography>
       </Box>
       <Container maxWidth="sm">
         <Box
