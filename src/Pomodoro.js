@@ -20,7 +20,7 @@ import {
   START,
   PAUSE,
   RESET,
-  DIGITAL_SOUND,
+  ALARM_DIGITAL,
 } from "./constants";
 import { updateTitle } from "./helpers";
 import { player } from "./player";
@@ -31,7 +31,7 @@ const buttonSound = player({
 });
 
 const alarmAudio = player({
-  asset: DIGITAL_SOUND,
+  asset: ALARM_DIGITAL,
   volume: 0.5,
 });
 
@@ -113,37 +113,34 @@ function Pomodoro() {
 
           switch (mode) {
             case POMODORO:
-              setMinutes(POMODORO_TIME);
-              setSeconds(0);
-
               // Gửi thông báo
               notification = new Notification("Pomodoro đã hoàn thành", {
                 body: "Đã đến lúc phải nghỉ ngơi!",
                 icon: "images/logo512.png",
                 dir: "ltr",
               });
+              setMinutes(POMODORO_TIME);
+              setSeconds(0);
               break;
             case SHORT_BREAK:
-              setMinutes(SHORT_BREAK_TIME);
-              setSeconds(0);
-
               // Gửi thông báo
               notification = new Notification("Nghỉ ngắn đã hoàn thành", {
                 body: "Đã đến lúc tập trung!",
                 icon: "images/logo512.png",
                 dir: "ltr",
               });
+              setMinutes(SHORT_BREAK_TIME);
+              setSeconds(0);
               break;
             case LONG_BREAK:
-              setMinutes(LONG_BREAK_TIME);
-              setSeconds(0);
-
               // Gửi thông báo
               notification = new Notification("Nghỉ dài đã hoàn thành", {
                 body: "Đã đến lúc tập trung!",
                 icon: "images/logo512.png",
                 dir: "ltr",
               });
+              setMinutes(LONG_BREAK_TIME);
+              setSeconds(0);
               break;
             default:
               break;
