@@ -10,7 +10,16 @@ const RESET = "Đặt lại";
 export const POMODORO_TIME = 25; // Phút
 export const SHORT_BREAK_TIME = 5; // Phút
 export const LONG_BREAK_TIME = 15; // Phút
-export const DIGITAL_SOUND = "audio/alarms/alarm-digital.mp3"; // Phút
+export const ALARM_BELL = "audio/alarms/alarm-bell.mp3";
+export const ALARM_BIRD = "audio/alarms/alarm-bird.mp3";
+export const ALARM_DIGITAL = "audio/alarms/alarm-digital.mp3";
+export const ALARM_KITCHEN = "audio/alarms/alarm-kitchen.mp3";
+export const ALARM_WOOD = "audio/alarms/alarm-wood.mp3";
+export const TICKING_NONE = "";
+export const TICKING_FAST = "audio/ticking/ticking-fast.mp3";
+export const TICKING_SLOW = "audio/ticking/ticking-slow.mp3";
+export const WHITE_NOISE = "audio/ticking/white-noise.mp3";
+export const BROWN_NOISE = "audio/ticking/brown.mp3";
 
 export {
   POMODORO,
