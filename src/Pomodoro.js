@@ -20,7 +20,7 @@ import {
   START,
   PAUSE,
   RESET,
-  ALARM_DIGITAL,
+  ALARM_DIGITAL
 } from "./constants";
 import { updateTitle } from "./helpers";
 import { player } from "./player";

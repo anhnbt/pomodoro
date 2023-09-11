@@ -20,6 +20,7 @@ export const TICKING_FAST = "audio/ticking/ticking-fast.mp3";
 export const TICKING_SLOW = "audio/ticking/ticking-slow.mp3";
 export const WHITE_NOISE = "audio/ticking/white-noise.mp3";
 export const BROWN_NOISE = "audio/ticking/brown.mp3";
+export const NOTIFICATION = "audio/notification.mp3";
 
 export {
   POMODORO,
