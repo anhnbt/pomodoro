@@ -10,6 +10,7 @@ import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
 import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import Tooltip from "@mui/material/Tooltip";
+import Snackbar from "@mui/material/Snackbar";
 
 export default function Header(props) {
   const [open, setOpen] = React.useState(false);
@@ -17,6 +18,13 @@ export default function Header(props) {
   const [notificationPermission, setNotificationPermission] = useState(
     Notification.permission
   );
+  const [state, setState] = React.useState({
+    open: false,
+    vertical: "top",
+    horizontal: "center",
+    msg: "",
+  });
+  const { vertical, horizontal, openSnackbar, msg } = state;
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -24,6 +32,10 @@ export default function Header(props) {
 
   const handleClose = (value) => {
     setOpen(false);
+  };
+
+  const handleCloseSnackbar = () => {
+    setState({ ...state, openSnackbar: false });
   };
 
   // Hàm để toggle fullscreen
@@ -49,6 +61,33 @@ export default function Header(props) {
 
   // Hàm để yêu cầu trình duyệt bật thông báo
   const requestNotificationPermission = () => {
+    // Kiểm tra xem trình duyệt hỗ trợ API Notification
+    if ("Notification" in window) {
+      // Xin quyền thông báo khi component được tạo lần đầu
+      if (
+        Notification.permission !== "granted" &&
+        Notification.permission !== "denied"
+      ) {
+        Notification.requestPermission().then((permission) => {
+          setNotificationPermission(permission);
+          if (permission === "granted") {
+            setState({
+              vertical: "bottom",
+              horizontal: "center",
+              openSnackbar: true,
+              msg: "Quyền thông báo đã được cấp.",
+            });
+          } else {
+            setState({
+              vertical: "bottom",
+              horizontal: "center",
+              openSnackbar: true,
+              msg: "Quyền thông báo bị từ chối.",
+            });
+          }
+        });
+      }
+    }
     Notification.requestPermission().then((permission) => {
       setNotificationPermission(permission);
     });
@@ -111,6 +150,13 @@ export default function Header(props) {
         </Toolbar>
       </AppBar>
       <Settings open={open} onClose={handleClose} />
+      <Snackbar
+        anchorOrigin={{ vertical, horizontal }}
+        open={openSnackbar}
+        onClose={handleCloseSnackbar}
+        message={msg}
+        key={vertical + horizontal}
+      />
     </div>
   );
 }

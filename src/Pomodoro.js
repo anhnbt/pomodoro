@@ -20,7 +20,7 @@ import {
   START,
   PAUSE,
   RESET,
-  ALARM_DIGITAL
+  ALARM_DIGITAL,
 } from "./constants";
 import { updateTitle, isMobileDevice } from "./helpers";
 import { player } from "./player";
@@ -73,20 +73,60 @@ function Pomodoro() {
   const [progressBarValue, setProgressBarValue] = useState(0);
 
   useEffect(() => {
-    // Xin quyền thông báo khi component được tạo lần đầu
-    if (
-      Notification.permission !== "granted" &&
-      Notification.permission !== "denied"
-    ) {
-      Notification.requestPermission().then((permission) => {
-        if (permission === "granted") {
-          console.log("Quyền thông báo đã được cấp.");
-        } else {
-          console.log("Quyền thông báo bị từ chối.");
-        }
-      });
+    // Kiểm tra xem trình duyệt hỗ trợ API Notification
+    if ("Notification" in window) {
+      // Xin quyền thông báo khi component được tạo lần đầu
+      if (
+        Notification.permission !== "granted" &&
+        Notification.permission !== "denied"
+      ) {
+        Notification.requestPermission().then((permission) => {
+          if (permission === "granted") {
+            console.log("Quyền thông báo đã được cấp.");
+          } else {
+            console.log("Quyền thông báo bị từ chối.");
+          }
+        });
+      }
     }
   }, []); // [] đảm bảo rằng useEffect chỉ chạy một lần khi component được tạo ra lần đầu
+
+  function sendNotification(title, body) {
+    // Kiểm tra xem trình duyệt hỗ trợ API Notification không
+    if ('Notification' in window) {
+      // Kiểm tra xem quyền thông báo đã được cấp cho ứng dụng hay chưa
+      if (Notification.permission === 'granted') {
+        // Đã cấp quyền, bạn có thể hiển thị thông báo
+        new Notification(title, {
+          body: body,
+          icon: "images/logo512.png",
+          dir: "ltr",
+        });
+      } else if (Notification.permission === 'denied') {
+        // Quyền bị từ chối, hiển thị thông báo yêu cầu người dùng cấp quyền
+        console.log('Vui lòng cho phép thông báo để sử dụng tính năng này.');
+      } else {
+        // Quyền chưa được cấp, hiển thị thông báo yêu cầu cấp quyền
+        Notification.requestPermission().then(function (permission) {
+          if (permission === 'granted') {
+            // Quyền đã được cấp, bạn có thể hiển thị thông báo
+            new Notification(title, {
+              body: body,
+              icon: "images/logo512.png",
+              dir: "ltr",
+            });
+          } else {
+            // Quyền bị từ chối, xử lý tùy ý (ví dụ: hiển thị thông báo khác)
+            console.log('Vui lòng cho phép thông báo để sử dụng tính năng này.');
+          }
+        });
+      }
+    } else {
+      // Trình duyệt không hỗ trợ API Notification
+      console.log('Trình duyệt của bạn không hỗ trợ thông báo.');
+    }
+  }
+  
 
   useEffect(() => {
     let timerInterval;
@@ -104,31 +144,19 @@ function Pomodoro() {
           switch (mode) {
             case POMODORO:
               // Gửi thông báo
-              notification = new Notification("Pomodoro đã hoàn thành", {
-                body: "Đã đến lúc phải nghỉ ngơi!",
-                icon: "images/logo512.png",
-                dir: "ltr",
-              });
+              sendNotification("Pomodoro đã hoàn thành", "Đã đến lúc phải nghỉ ngơi!");
               setMinutes(POMODORO_TIME);
               setSeconds(0);
               break;
             case SHORT_BREAK:
               // Gửi thông báo
-              notification = new Notification("Nghỉ ngắn đã hoàn thành", {
-                body: "Đã đến lúc tập trung!",
-                icon: "images/logo512.png",
-                dir: "ltr",
-              });
+              sendNotification("Nghỉ ngắn đã hoàn thành", "Đã đến lúc tập trung!");
               setMinutes(SHORT_BREAK_TIME);
               setSeconds(0);
               break;
             case LONG_BREAK:
               // Gửi thông báo
-              notification = new Notification("Nghỉ dài đã hoàn thành", {
-                body: "Đã đến lúc tập trung!",
-                icon: "images/logo512.png",
-                dir: "ltr",
-              });
+              sendNotification("Nghỉ dài đã hoàn thành", "Đã đến lúc tập trung!");
               setMinutes(LONG_BREAK_TIME);
               setSeconds(0);
               break;
