@@ -89,10 +89,15 @@ export default function Header(props) {
           }
         });
       }
+    } else {
+      // Trình duyệt không hỗ trợ API Notification
+      setState({
+        vertical: "bottom",
+        horizontal: "center",
+        openSnackbar: true,
+        msg: "Trình duyệt của bạn không hỗ trợ thông báo.",
+      });
     }
-    Notification.requestPermission().then((permission) => {
-      setNotificationPermission(permission);
-    });
   };
 
   return (
