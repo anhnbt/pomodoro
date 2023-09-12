@@ -35,8 +35,14 @@ import {
   BROWN_NOISE,
 } from "./constants";
 
-const alarmSound = player({});
-const tickingSound = player({});
+const alarmSound = player({
+  asset: ALARM_DIGITAL,
+  volume: 0.5,
+});
+const tickingSound = player({
+  asset: TICKING_SLOW,
+  volume: 0.5,
+});
 
 export default function Settings(props) {
   const { onClose, open } = props;
