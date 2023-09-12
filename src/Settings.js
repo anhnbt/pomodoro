@@ -150,18 +150,24 @@ export default function Settings(props) {
           <Box
             sx={{ width: "100%", maxWidth: 500, bgcolor: "background.paper" }}
           >
-            <Box sx={{ my: 3, mx: 2 }}>
+            <Box sx={{ my: 1, mx: 1 }}>
               <Typography variant="h6" gutterBottom>
                 Âm thanh
               </Typography>
-              <Grid container alignItems="center" spacing={2}>
-                <Grid item xs={7}>
-                  Âm thanh báo động
+              <Grid
+                container
+                justifyContent="space-between"
+                alignItems="center"
+                rowSpacing={2}
+                columnSpacing={0}
+              >
+                <Grid item xs={8}>
+                  Báo động
                 </Grid>
-                <Grid item xs={5}>
-                  <FormControl sx={{ minWidth: 200 }} size="small">
+                <Grid item xs={4}>
+                  <FormControl fullWidth size="small">
                     <InputLabel id="alarm-sound-type=label">
-                      Âm thanh báo động
+                      Báo động
                     </InputLabel>
                     <Select
                       labelId="alarm-sound-type-label"
@@ -178,13 +184,13 @@ export default function Settings(props) {
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={7}>
-                  Âm thanh tích tắc
+                <Grid item xs={8}>
+                  Tích tắc
                 </Grid>
-                <Grid item xs={5}>
-                  <FormControl sx={{ minWidth: 200 }} size="small">
+                <Grid item xs={4}>
+                  <FormControl fullWidth size="small">
                     <InputLabel id="ticking-sound-type=label">
-                      Âm thanh tích tắc
+                      Tích tắc
                     </InputLabel>
                     <Select
                       labelId="ticking-sound-type-label"
@@ -301,7 +307,7 @@ export default function Settings(props) {
                   Định dạng giờ
                 </Grid>
                 <Grid item xs={4}>
-                  <FormControl sx={{ minWidth: 120 }} size="small">
+                  <FormControl fullWidth size="small">
                     <Select
                       labelId="hour-format-label"
                       id="hour-format"
@@ -320,7 +326,7 @@ export default function Settings(props) {
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Đóng</Button>
-        <Button onClick={handleClose}>Lưu lại</Button>
+        <Button variant="contained" onClick={handleClose}>Lưu lại</Button>
       </DialogActions>
     </Dialog>
   );
