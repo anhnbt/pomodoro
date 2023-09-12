@@ -15,9 +15,7 @@ import Snackbar from "@mui/material/Snackbar";
 export default function Header(props) {
   const [open, setOpen] = React.useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [notificationPermission, setNotificationPermission] = useState(
-    Notification.permission
-  );
+  const [notificationPermission, setNotificationPermission] = useState(null);
   const [state, setState] = React.useState({
     open: false,
     vertical: "top",
@@ -62,7 +60,11 @@ export default function Header(props) {
   // Hàm để yêu cầu trình duyệt bật thông báo
   const requestNotificationPermission = () => {
     // Kiểm tra xem trình duyệt hỗ trợ API Notification
-    if ("Notification" in window) {
+    if (
+      "Notification" in window &&
+      "serviceWorker" in navigator &&
+      "PushManager" in window
+    ) {
       // Xin quyền thông báo khi component được tạo lần đầu
       if (
         Notification.permission !== "granted" &&
