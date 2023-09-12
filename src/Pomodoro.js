@@ -22,7 +22,7 @@ import {
   RESET,
   ALARM_DIGITAL
 } from "./constants";
-import { updateTitle } from "./helpers";
+import { updateTitle, isMobileDevice } from "./helpers";
 import { player } from "./player";
 
 const buttonSound = player({
@@ -71,9 +71,6 @@ function Pomodoro() {
   const [isRunning, setIsRunning] = useState(false); // Thêm biến để theo dõi trạng thái của timer
   const [mode, setMode] = useState(POMODORO); // Mặc định là Pomodoro
   const [progressBarValue, setProgressBarValue] = useState(0);
-  const [notificationPermission, setNotificationPermission] = useState(
-    Notification.permission
-  );
 
   useEffect(() => {
     // Xin quyền thông báo khi component được tạo lần đầu
@@ -90,13 +87,6 @@ function Pomodoro() {
       });
     }
   }, []); // [] đảm bảo rằng useEffect chỉ chạy một lần khi component được tạo ra lần đầu
-
-  // Hàm để yêu cầu trình duyệt bật thông báo
-  const requestNotificationPermission = () => {
-    Notification.requestPermission().then((permission) => {
-      setNotificationPermission(permission);
-    });
-  };
 
   useEffect(() => {
     let timerInterval;
@@ -185,7 +175,9 @@ function Pomodoro() {
   }, [isRunning, minutes, seconds, mode]);
 
   useEffect(() => {
-    updateTitle(minutes, seconds, mode);
+    if (!isMobileDevice()) {
+      updateTitle(minutes, seconds, mode);
+    }
   }, [mode, minutes, seconds]);
 
   const toggleTimer = () => {
@@ -487,16 +479,6 @@ function Pomodoro() {
               lập lịch gọi điện thoại, kiểm tra email, hoặc đọc một chút.
             </Box>
           </Box>
-          <div>
-            {notificationPermission === "granted" ? (
-              <p>Quyền thông báo đã được bật.</p>
-            ) : (
-              <button onClick={requestNotificationPermission}>
-                Bật thông báo
-              </button>
-            )}
-            {/* Các phần khác của ứng dụng */}
-          </div>
         </Box>
       </Container>
     </main>

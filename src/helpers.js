@@ -13,3 +13,7 @@ export function updateTitle(minutes, seconds, mode) {
   const message = mode === POMODORO ? TIME_TO_FOCUS : TIME_FOR_A_BREAK;
   document.title = `${formatTime(minutes, seconds)} - ${message}`;
 }
+
+export function isMobileDevice() {
+  return /Mobi|Android/i.test(navigator.userAgent);
+}
