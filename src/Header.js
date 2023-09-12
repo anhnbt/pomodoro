@@ -125,7 +125,7 @@ export default function Header(props) {
             </Tooltip>
           )}
           <Tooltip
-            sx={{ display: { xs: "none", sm: "block" } }}
+            sx={{ display: { xs: "none", sm: "inherit" } }}
             title={
               isFullscreen
                 ? "Thoát chế độ toàn màn hình"
