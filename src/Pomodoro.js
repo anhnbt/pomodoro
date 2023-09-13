@@ -16,7 +16,16 @@ import {
   START,
   PAUSE,
   RESET,
+  ALARM_BELL,
+  ALARM_BIRD,
   ALARM_DIGITAL,
+  ALARM_KITCHEN,
+  ALARM_WOOD,
+  TICKING_NONE,
+  TICKING_FAST,
+  TICKING_SLOW,
+  WHITE_NOISE,
+  BROWN_NOISE,
 } from "./constants";
 import { updateTitle, isMobileDevice } from "./helpers";
 import { player } from "./player";
@@ -29,6 +38,11 @@ const buttonSound = player({
 
 const alarmAudio = player({
   asset: ALARM_DIGITAL,
+  volume: 0.5,
+});
+
+const tickingAudio = player({
+  asset: TICKING_NONE,
   volume: 0.5,
 });
 
@@ -66,6 +80,9 @@ function Pomodoro() {
   const pomodoroTime = useSelector((state) => state.settings.pomodoroTime);
   const shortBreakTime = useSelector((state) => state.settings.shortBreakTime);
   const longBreakTime = useSelector((state) => state.settings.longBreakTime);
+  const volume = useSelector((state) => state.settings.volume);
+  const alarmSoundType = useSelector((state) => state.settings.alarmSoundType);
+  const tickingSoundType = useSelector((state) => state.settings.tickingSoundType);
 
   const [minutes, setMinutes] = useState(pomodoroTime); // Khai báo giá trị ban đầu cho minutes
   const [seconds, setSeconds] = useState(0); // Khai báo giá trị ban đầu cho seconds
@@ -196,9 +213,11 @@ function Pomodoro() {
         default:
           break;
       }
-
+      console.log('totalSecondsInMode', totalSecondsInMode, 'pomodoroTime', pomodoroTime);
       const progress =
-        ((totalSecondsInMode - currentDurationRef.current) / totalSecondsInMode) * 100;
+        ((totalSecondsInMode - currentDurationRef.current) /
+          totalSecondsInMode) *
+        100;
       setProgressBarValue(progress);
 
       updateTimer(currentDurationRef.current);
@@ -211,6 +230,10 @@ function Pomodoro() {
 
   useEffect(() => {
     if (isRunning) {
+      if (tickingSoundType !== 'TICKING_NONE') {
+        tickingAudio.play();
+        console.log('tickingSoundType play');
+      }
       timerRef.current = setInterval(handleCountdown, 1000);
     } else {
       clearInterval(timerRef.current);
@@ -221,22 +244,69 @@ function Pomodoro() {
     };
   }, [isRunning]);
 
+  useEffect(() => {
+    switch (alarmSoundType) {
+      case "ALARM_BELL":
+        alarmAudio.setAudio(ALARM_BELL);
+        break;
+      case "ALARM_BIRD":
+        alarmAudio.setAudio(ALARM_BIRD);
+        break;
+      case "ALARM_DIGITAL":
+        alarmAudio.setAudio(ALARM_DIGITAL);
+        break;
+      case "ALARM_KITCHEN":
+        alarmAudio.setAudio(ALARM_KITCHEN);
+        break;
+      case "ALARM_WOOD":
+        alarmAudio.setAudio(ALARM_WOOD);
+        break;
+      default:
+        break;
+    }
+  }, [alarmSoundType]);
+
+  useEffect(() => {
+    switch (tickingSoundType) {
+      case "TICKING_FAST":
+        tickingAudio.setAudio(TICKING_FAST);
+        break;
+      case "TICKING_SLOW":
+        tickingAudio.setAudio(TICKING_SLOW);
+        break;
+      case "WHITE_NOISE":
+        tickingAudio.setAudio(WHITE_NOISE);
+        break;
+      case "BROWN_NOISE":
+        tickingAudio.setAudio(BROWN_NOISE);
+        break;
+      case "TICKING_NONE":
+      default:
+        break;
+    }
+  }, [tickingSoundType]);
+
+  useEffect(() => {
+    alarmAudio.setVolume(volume);
+    tickingAudio.setVolume(volume);
+  }, [volume]);
+
   // Sử dụng useEffect để cập nhật giá trị minutes và seconds khi giá trị thay đổi
   useEffect(() => {
-    console.log('pomodoroTime', pomodoroTime)
+    console.log("pomodoroTime", pomodoroTime, 'minutes', minutes);
     setMinutes(pomodoroTime);
     setSeconds(0);
   }, [pomodoroTime]);
 
-  useEffect(() => {
-    setMinutes(shortBreakTime);
-    setSeconds(0);
-  }, [shortBreakTime]);
+  // useEffect(() => {
+  //   setMinutes(shortBreakTime);
+  //   setSeconds(0);
+  // }, [shortBreakTime]);
 
-  useEffect(() => {
-    setMinutes(longBreakTime);
-    setSeconds(0);
-  }, [longBreakTime]);
+  // useEffect(() => {
+  //   setMinutes(longBreakTime);
+  //   setSeconds(0);
+  // }, [longBreakTime]);
 
   useEffect(() => {
     if (!isMobileDevice()) {

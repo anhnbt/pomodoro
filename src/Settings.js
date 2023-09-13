@@ -24,6 +24,7 @@ import {
   ALARM_DIGITAL,
   ALARM_KITCHEN,
   ALARM_WOOD,
+  TICKING_NONE,
   TICKING_FAST,
   TICKING_SLOW,
   WHITE_NOISE,
@@ -55,19 +56,27 @@ export default function Settings() {
   const settings = useSelector((state) => state.settings);
   const dispatch = useDispatch();
 
-  
   // Khai báo các biến state để lưu các giá trị cài đặt mới
   const [newVolume, setNewVolume] = useState(settings.volume);
   const [newPomodoroTime, setNewPomodoroTime] = useState(settings.pomodoroTime);
-  const [newShortBreakTime, setNewShortBreakTime] = useState(settings.shortBreakTime);
-  const [newLongBreakTime, setNewLongBreakTime] = useState(settings.longBreakTime);
-  const [newAlarmSoundType, setNewAlarmSoundType] = useState(settings.alarmSoundType);
-  const [newTickingSoundType, setNewTickingSoundType] = useState(settings.tickingSoundType);
-  const [newHourFormat, setNewHourFormat] = useState(settings.hourFormat);
-  const [newAutoStartPomodoroEnabled, setNewAutoStartPomodoroEnabled] = useState(
-    settings.autoStartPomodoroEnabled
+  const [newShortBreakTime, setNewShortBreakTime] = useState(
+    settings.shortBreakTime
   );
-  const [newAutoStartEnabled, setNewAutoStartEnabled] = useState(settings.autoStartEnabled);
+  const [newLongBreakTime, setNewLongBreakTime] = useState(
+    settings.longBreakTime
+  );
+  const [newAlarmSoundType, setNewAlarmSoundType] = useState(
+    settings.alarmSoundType
+  );
+  const [newTickingSoundType, setNewTickingSoundType] = useState(
+    settings.tickingSoundType
+  );
+  const [newHourFormat, setNewHourFormat] = useState(settings.hourFormat);
+  const [newAutoStartPomodoroEnabled, setNewAutoStartPomodoroEnabled] =
+    useState(settings.autoStartPomodoroEnabled);
+  const [newAutoStartEnabled, setNewAutoStartEnabled] = useState(
+    settings.autoStartEnabled
+  );
 
   const handleSaveSettings = () => {
     // Thực hiện lưu các giá trị cài đặt vào Redux store và Local Storage
@@ -82,15 +91,68 @@ export default function Settings() {
     dispatch(setAutoStartEnabled(newAutoStartEnabled));
 
     // Lưu vào Local Storage (bạn cần xử lý lưu vào Local Storage ở đây)
-    localStorage.setItem('pomodoroTime', newPomodoroTime);
-    localStorage.setItem('volume', newVolume);
-    localStorage.setItem('shortBreakTime', newShortBreakTime);
-    localStorage.setItem('longBreakTime', newLongBreakTime);
-    localStorage.setItem('alarmSoundType', newAlarmSoundType);
-    localStorage.setItem('tickingSoundType', newTickingSoundType);
-    localStorage.setItem('hourFormat', newHourFormat);
-    localStorage.setItem('autoStartPomodoroEnabled', newAutoStartPomodoroEnabled);
-    localStorage.setItem('autoStartEnabled', newAutoStartEnabled);
+    localStorage.setItem("pomodoroTime", newPomodoroTime);
+    localStorage.setItem("volume", newVolume);
+    localStorage.setItem("shortBreakTime", newShortBreakTime);
+    localStorage.setItem("longBreakTime", newLongBreakTime);
+    localStorage.setItem("alarmSoundType", newAlarmSoundType);
+    localStorage.setItem("tickingSoundType", newTickingSoundType);
+    localStorage.setItem("hourFormat", newHourFormat);
+    localStorage.setItem(
+      "autoStartPomodoroEnabled",
+      newAutoStartPomodoroEnabled
+    );
+    localStorage.setItem("autoStartEnabled", newAutoStartEnabled);
+  };
+
+  const handleChangeAlarmSoundType = (event) => {
+    setNewAlarmSoundType(event.target.value);
+    switch (event.target.value) {
+      case "ALARM_BELL":
+        alarmSound.setAudio(ALARM_BELL);
+        break;
+      case "ALARM_BIRD":
+        alarmSound.setAudio(ALARM_BIRD);
+        break;
+      case "ALARM_DIGITAL":
+        alarmSound.setAudio(ALARM_DIGITAL);
+        break;
+      case "ALARM_KITCHEN":
+        alarmSound.setAudio(ALARM_KITCHEN);
+        break;
+      case "ALARM_WOOD":
+        alarmSound.setAudio(ALARM_WOOD);
+        break;
+      default:
+        break;
+    }
+    alarmSound.play();
+  };
+
+  const handleChangeTickingSoundType = (event) => {
+    setNewTickingSoundType(event.target.value);
+    switch (event.target.value) {
+      case "TICKING_FAST":
+        tickingSound.setAudio(TICKING_FAST);
+        break;
+      case "TICKING_SLOW":
+        tickingSound.setAudio(TICKING_SLOW);
+        break;
+      case "WHITE_NOISE":
+        tickingSound.setAudio(WHITE_NOISE);
+        break;
+      case "BROWN_NOISE":
+        tickingSound.setAudio(BROWN_NOISE);
+        break;
+      case "TICKING_NONE":
+      default:
+        break;
+    }
+    if (event.target.value !== "TICKING_NONE") {
+      tickingSound.play();
+    } else {
+      tickingSound.stop();
+    }
   };
 
   return (
@@ -118,13 +180,13 @@ export default function Settings() {
                   id="alarm-sound-type"
                   value={newAlarmSoundType}
                   label="Âm thanh tích tắc"
-                  onChange={(e) => setNewAlarmSoundType(e.target.value)}
+                  onChange={handleChangeAlarmSoundType}
                 >
-                  <MenuItem value={"ALARM_BELL"}>Bell</MenuItem>
-                  <MenuItem value={"ALARM_BIRD"}>Bird</MenuItem>
-                  <MenuItem value={"ALARM_DIGITAL"}>Digital</MenuItem>
-                  <MenuItem value={"ALARM_KITCHEN"}>Kitchen</MenuItem>
-                  <MenuItem value={"ALARM_WOOD"}>Wood</MenuItem>
+                  <MenuItem value={'ALARM_BELL'}>Bell</MenuItem>
+                  <MenuItem value={'ALARM_BIRD'}>Bird</MenuItem>
+                  <MenuItem value={'ALARM_DIGITAL'}>Digital</MenuItem>
+                  <MenuItem value={'ALARM_KITCHEN'}>Kitchen</MenuItem>
+                  <MenuItem value={'ALARM_WOOD'}>Wood</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -139,15 +201,15 @@ export default function Settings() {
                   id="ticking-sound-type"
                   value={newTickingSoundType}
                   label="Âm thanh tích tắc"
-                  onChange={(e) => setNewTickingSoundType(e.target.value)}
+                  onChange={handleChangeTickingSoundType}
                 >
-                  <MenuItem value="TICKING_NONE">
+                  <MenuItem value={'TICKING_NONE'}>
                     <em>None</em>
                   </MenuItem>
-                  <MenuItem value={"TICKING_FAST"}>Ticking Fast</MenuItem>
-                  <MenuItem value={"TICKING_SLOW"}>Ticking Slow</MenuItem>
-                  <MenuItem value={"WHITE_NOISE"}>White Noise</MenuItem>
-                  <MenuItem value={"BROWN_NOISE"}>Brown Noise</MenuItem>
+                  <MenuItem value={'TICKING_FAST'}>Ticking Fast</MenuItem>
+                  <MenuItem value={'TICKING_SLOW'}>Ticking Slow</MenuItem>
+                  <MenuItem value={'WHITE_NOISE'}>White Noise</MenuItem>
+                  <MenuItem value={'BROWN_NOISE'}>Brown Noise</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -218,7 +280,9 @@ export default function Settings() {
             <Grid item xs={2}>
               <Switch
                 checked={newAutoStartPomodoroEnabled}
-                onChange={() => setNewAutoStartPomodoroEnabled(!newAutoStartPomodoroEnabled)}
+                onChange={() =>
+                  setNewAutoStartPomodoroEnabled(!newAutoStartPomodoroEnabled)
+                }
                 inputProps={{ "aria-label": "newAutoStartPomodoroEnabled" }}
               />
             </Grid>
@@ -228,7 +292,9 @@ export default function Settings() {
             <Grid item xs={2}>
               <Switch
                 checked={newAutoStartEnabled}
-                onChange={() => setNewAutoStartEnabled(!newAutoStartPomodoroEnabled)}
+                onChange={() =>
+                  setNewAutoStartEnabled(!newAutoStartPomodoroEnabled)
+                }
                 inputProps={{ "aria-label": "newAutoStartEnabled" }}
               />
             </Grid>

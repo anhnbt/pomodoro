@@ -22,7 +22,7 @@ const initialState = {
   shortBreakTime: SHORT_BREAK_TIME, // Giá trị mặc định cho thời gian nghỉ ngắn (minutes)
   longBreakTime: LONG_BREAK_TIME, // Giá trị mặc định cho thời gian nghỉ dài (minutes)
   alarmSoundType: 'ALARM_DIGITAL', // Giá trị mặc định cho loại âm thanh báo động
-  tickingSoundType: 'TICKING_SLOW', // Giá trị mặc định cho loại âm thanh đồng hồ
+  tickingSoundType: 'TICKING_NONE', // Giá trị mặc định cho loại âm thanh đồng hồ
   hourFormat: "12", // Giá trị mặc định cho định dạng giờ (12 hoặc 24)
   autoStartPomodoroEnabled: false, // Tự động bắt đầu Pomodoro khi ứng dụng mở
   autoStartEnabled: false, // Tự động bắt đầu khi kết thúc Pomodoro hoặc nghỉ
