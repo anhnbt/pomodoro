@@ -1,14 +1,18 @@
 import React, { Component } from "react";
-import Pomodoro from "./Pomodoro";
+import Pomodoro from './Pomodoro';
 import Footer from "./Footer";
+import { Provider } from "react-redux";
+import store from "./redux/store"; // Import Redux store
+import Header from "./Header";
 
 class App extends Component {
   render() {
     return (
-      <React.Fragment>
+      <Provider store={store}>
+        <Header />
         <Pomodoro />
         <Footer />
-      </React.Fragment>
+      </Provider>
     );
   }
 }

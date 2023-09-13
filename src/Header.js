@@ -11,6 +11,11 @@ import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import Tooltip from "@mui/material/Tooltip";
 import Snackbar from "@mui/material/Snackbar";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
 
 export default function Header(props) {
   const [open, setOpen] = React.useState(false);
@@ -153,10 +158,23 @@ export default function Header(props) {
             >
               <SettingsIcon />
             </IconButton>
+            <Dialog
+              open={open}
+              onClose={handleClose}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+            >
+              <DialogTitle id="alert-dialog-title">Cài đặt</DialogTitle>
+              <DialogContent>
+                <Settings />
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleClose}>Đóng</Button>
+              </DialogActions>
+            </Dialog>
           </Tooltip>
         </Toolbar>
       </AppBar>
-      <Settings open={open} onClose={handleClose} />
       <Snackbar
         anchorOrigin={{ vertical, horizontal }}
         open={openSnackbar}

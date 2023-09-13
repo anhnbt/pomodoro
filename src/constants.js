@@ -7,7 +7,7 @@ const START = "Bắt đầu";
 const PAUSE = "Tạm dừng";
 const RESET = "Đặt lại";
 
-export const POMODORO_TIME = 25; // Phút
+export const DEFAULT_POMODORO_TIME = 25; // Phút
 export const SHORT_BREAK_TIME = 5; // Phút
 export const LONG_BREAK_TIME = 15; // Phút
 export const ALARM_BELL = "audio/alarms/alarm-bell.mp3";
