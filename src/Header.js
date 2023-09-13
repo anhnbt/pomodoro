@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef  } from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
@@ -16,8 +16,11 @@ import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
+import { useSelector } from 'react-redux';
 
 export default function Header() {
+
+  const mode = useSelector((state) => state.mode);
   const [open, setOpen] = React.useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [notificationPermission, setNotificationPermission] = useState(null);
@@ -28,6 +31,7 @@ export default function Header() {
     msg: "",
   });
   const { vertical, horizontal, openSnackbar, msg } = state;
+  const settingsRef = useRef();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -105,12 +109,16 @@ export default function Header() {
     }
   };
 
+  const handleSaveSettings = () => {
+    settingsRef.current.handleSaveSettings();
+  };
+
   return (
     <div>
       <AppBar
         position="static"
         sx={{
-          backgroundColor: `pomodoro.main`,
+          backgroundColor: `${mode}.main`,
         }}
       >
         <Toolbar>
@@ -165,10 +173,11 @@ export default function Header() {
           >
             <DialogTitle id="alert-dialog-title">Cài đặt</DialogTitle>
             <DialogContent>
-              <Settings />
+              <Settings ref={settingsRef} />
             </DialogContent>
             <DialogActions>
               <Button onClick={handleClose}>Đóng</Button>
+              <Button variant="contained" onClick={handleSaveSettings}>Lưu cài đặt</Button>
             </DialogActions>
           </Dialog>
         </Toolbar>

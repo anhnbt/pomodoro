@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import Button from "@mui/material/Button";
+import React, { useState, forwardRef } from "react";
 import Stack from "@mui/material/Stack";
 import Slider from "@mui/material/Slider";
 import VolumeDown from "@mui/icons-material/VolumeDown";
@@ -49,26 +48,34 @@ const tickingSound = player({
   volume: 0.5,
 });
 
-export default function Settings() {
-  const settings = useSelector((state) => state.settings);
+const Settings = forwardRef((props, ref) => {
+  const currentSettings = useSelector((state) => state.settings);
   const dispatch = useDispatch();
 
   // Khai báo các biến state để lưu các giá trị cài đặt mới
-  const [newVolume, setNewVolume] = useState(settings.volume);
-  const [newPomodoroTime, setNewPomodoroTime] = useState(settings.pomodoroTime);
+  const [newVolume, setNewVolume] = useState(currentSettings.volume);
+  const [newPomodoroTime, setNewPomodoroTime] = useState(
+    currentSettings.pomodoroTime
+  );
   const [newShortBreakTime, setNewShortBreakTime] = useState(
-    settings.shortBreakTime
+    currentSettings.shortBreakTime
   );
   const [newLongBreakTime, setNewLongBreakTime] = useState(
-    settings.longBreakTime
+    currentSettings.longBreakTime
   );
-  const [newAlarmSound, setNewAlarmSound] = useState(settings.alarmSound);
-  const [newTickingSound, setNewTickingSound] = useState(settings.tickingSound);
-  const [newHourFormat, setNewHourFormat] = useState(settings.hourFormat);
+  const [newAlarmSound, setNewAlarmSound] = useState(
+    currentSettings.alarmSound
+  );
+  const [newTickingSound, setNewTickingSound] = useState(
+    currentSettings.tickingSound
+  );
+  const [newHourFormat, setNewHourFormat] = useState(
+    currentSettings.hourFormat
+  );
   const [newAutoStartPomodoroEnabled, setNewAutoStartPomodoroEnabled] =
-    useState(settings.autoStartPomodoroEnabled);
+    useState(currentSettings.autoStartPomodoroEnabled);
   const [newAutoStartEnabled, setNewAutoStartEnabled] = useState(
-    settings.autoStartEnabled
+    currentSettings.autoStartEnabled
   );
 
   const handleSaveSettings = () => {
@@ -89,7 +96,7 @@ export default function Settings() {
     localStorage.setItem("shortBreakTime", newShortBreakTime);
     localStorage.setItem("longBreakTime", newLongBreakTime);
     localStorage.setItem("alarmSound", newAlarmSound);
-    localStorage.setItem("tickingSoundType", newTickingSound);
+    localStorage.setItem("tickingSound", newTickingSound);
     localStorage.setItem("hourFormat", newHourFormat);
     localStorage.setItem(
       "autoStartPomodoroEnabled",
@@ -99,6 +106,11 @@ export default function Settings() {
     alarmSound.stop();
     tickingSound.stop();
   };
+
+  // Truyền ref vào component con
+  React.useImperativeHandle(ref, () => ({
+    handleSaveSettings,
+  }));
 
   const handleChangeAlarmSound = (event) => {
     setNewAlarmSound(event.target.value);
@@ -289,7 +301,7 @@ export default function Settings() {
               <Switch
                 checked={newAutoStartEnabled}
                 onChange={() =>
-                  setNewAutoStartEnabled(!newAutoStartPomodoroEnabled)
+                  setNewAutoStartEnabled(!newAutoStartEnabled)
                 }
                 inputProps={{ "aria-label": "newAutoStartEnabled" }}
               />
@@ -322,10 +334,9 @@ export default function Settings() {
             </Grid>
           </Grid>
         </Box>
-        <Button variant="contained" onClick={handleSaveSettings}>
-          Lưu lại
-        </Button>
       </Box>
     </FormGroup>
   );
-}
+});
+
+export default Settings;

@@ -29,7 +29,8 @@ import {
 } from "./constants";
 import { updateTitle, isMobileDevice } from "./helpers";
 import { player } from "./player";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { setMode } from './redux/modeSlice'; // Thay thế bằng đường dẫn tương ứng
 
 const buttonSound = player({
   asset: "audio/button-press.wav",
@@ -95,8 +96,11 @@ function Pomodoro() {
   const timerRef = useRef(null);
   const currentDurationRef = useRef(0);
 
-  const [mode, setMode] = useState(POMODORO); // Mặc định là Pomodoro
   const [progressBarValue, setProgressBarValue] = useState(0);
+
+  const mode = useSelector((state) => state.mode); // Đọc giá trị mode từ Redux store
+  const dispatch = useDispatch();
+
   useEffect(() => {
     // Kiểm tra xem trình duyệt hỗ trợ API Notification
     if (
@@ -391,7 +395,7 @@ function Pomodoro() {
     tickingAudio.stop();
 
     // Cập nhật chế độ và thời gian
-    setMode(newMode);
+    dispatch(setMode(newMode));
     setMinutes(defaultMinutes);
     setSeconds(defaultSeconds);
 

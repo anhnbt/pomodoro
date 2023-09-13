@@ -4,16 +4,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   DEFAULT_POMODORO_TIME,
   DEFAULT_SHORT_BREAK_TIME,
-  DEFAULT_LONG_BREAK_TIME,
-  ALARM_BELL,
-  ALARM_BIRD,
-  ALARM_DIGITAL,
-  ALARM_KITCHEN,
-  ALARM_WOOD,
-  TICKING_FAST,
-  TICKING_SLOW,
-  WHITE_NOISE,
-  BROWN_NOISE,
+  DEFAULT_LONG_BREAK_TIME
 } from "../constants";
 
 const initialState = {
