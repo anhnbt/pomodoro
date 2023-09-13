@@ -16,9 +16,6 @@ import Grid from "@mui/material/Grid";
 import Divider from "@mui/material/Divider";
 import { player } from "./player";
 import {
-  DEFAULT_POMODORO_TIME,
-  SHORT_BREAK_TIME,
-  LONG_BREAK_TIME,
   ALARM_BELL,
   ALARM_BIRD,
   ALARM_DIGITAL,
@@ -36,8 +33,8 @@ import {
   setVolume,
   setShortBreakTime,
   setLongBreakTime,
-  setAlarmSoundType,
-  setTickingSoundType,
+  setAlarmSound,
+  setTickingSound,
   setHourFormat,
   setAutoStartPomodoroEnabled,
   setAutoStartEnabled,
@@ -65,12 +62,8 @@ export default function Settings() {
   const [newLongBreakTime, setNewLongBreakTime] = useState(
     settings.longBreakTime
   );
-  const [newAlarmSoundType, setNewAlarmSoundType] = useState(
-    settings.alarmSoundType
-  );
-  const [newTickingSoundType, setNewTickingSoundType] = useState(
-    settings.tickingSoundType
-  );
+  const [newAlarmSound, setNewAlarmSound] = useState(settings.alarmSound);
+  const [newTickingSound, setNewTickingSound] = useState(settings.tickingSound);
   const [newHourFormat, setNewHourFormat] = useState(settings.hourFormat);
   const [newAutoStartPomodoroEnabled, setNewAutoStartPomodoroEnabled] =
     useState(settings.autoStartPomodoroEnabled);
@@ -84,8 +77,8 @@ export default function Settings() {
     dispatch(setVolume(newVolume));
     dispatch(setShortBreakTime(newShortBreakTime));
     dispatch(setLongBreakTime(newLongBreakTime));
-    dispatch(setAlarmSoundType(newAlarmSoundType));
-    dispatch(setTickingSoundType(newTickingSoundType));
+    dispatch(setAlarmSound(newAlarmSound));
+    dispatch(setTickingSound(newTickingSound));
     dispatch(setHourFormat(newHourFormat));
     dispatch(setAutoStartPomodoroEnabled(newAutoStartPomodoroEnabled));
     dispatch(setAutoStartEnabled(newAutoStartEnabled));
@@ -95,18 +88,20 @@ export default function Settings() {
     localStorage.setItem("volume", newVolume);
     localStorage.setItem("shortBreakTime", newShortBreakTime);
     localStorage.setItem("longBreakTime", newLongBreakTime);
-    localStorage.setItem("alarmSoundType", newAlarmSoundType);
-    localStorage.setItem("tickingSoundType", newTickingSoundType);
+    localStorage.setItem("alarmSound", newAlarmSound);
+    localStorage.setItem("tickingSoundType", newTickingSound);
     localStorage.setItem("hourFormat", newHourFormat);
     localStorage.setItem(
       "autoStartPomodoroEnabled",
       newAutoStartPomodoroEnabled
     );
     localStorage.setItem("autoStartEnabled", newAutoStartEnabled);
+    alarmSound.stop();
+    tickingSound.stop();
   };
 
-  const handleChangeAlarmSoundType = (event) => {
-    setNewAlarmSoundType(event.target.value);
+  const handleChangeAlarmSound = (event) => {
+    setNewAlarmSound(event.target.value);
     switch (event.target.value) {
       case "ALARM_BELL":
         alarmSound.setAudio(ALARM_BELL);
@@ -129,8 +124,8 @@ export default function Settings() {
     alarmSound.play();
   };
 
-  const handleChangeTickingSoundType = (event) => {
-    setNewTickingSoundType(event.target.value);
+  const handleChangeTickingSound = (event) => {
+    setNewTickingSound(event.target.value);
     switch (event.target.value) {
       case "TICKING_FAST":
         tickingSound.setAudio(TICKING_FAST);
@@ -146,6 +141,7 @@ export default function Settings() {
         break;
       case "TICKING_NONE":
       default:
+        tickingSound.setAudio(TICKING_NONE);
         break;
     }
     if (event.target.value !== "TICKING_NONE") {
@@ -174,19 +170,19 @@ export default function Settings() {
             </Grid>
             <Grid item xs={4}>
               <FormControl fullWidth size="small">
-                <InputLabel id="alarm-sound-type=label">Báo động</InputLabel>
+                <InputLabel id="alarm-sound=label">Báo động</InputLabel>
                 <Select
-                  labelId="alarm-sound-type-label"
-                  id="alarm-sound-type"
-                  value={newAlarmSoundType}
+                  labelId="alarm-sound-label"
+                  id="alarm-sound"
+                  value={newAlarmSound}
                   label="Âm thanh tích tắc"
-                  onChange={handleChangeAlarmSoundType}
+                  onChange={handleChangeAlarmSound}
                 >
-                  <MenuItem value={'ALARM_BELL'}>Bell</MenuItem>
-                  <MenuItem value={'ALARM_BIRD'}>Bird</MenuItem>
-                  <MenuItem value={'ALARM_DIGITAL'}>Digital</MenuItem>
-                  <MenuItem value={'ALARM_KITCHEN'}>Kitchen</MenuItem>
-                  <MenuItem value={'ALARM_WOOD'}>Wood</MenuItem>
+                  <MenuItem value={"ALARM_BELL"}>Bell</MenuItem>
+                  <MenuItem value={"ALARM_BIRD"}>Bird</MenuItem>
+                  <MenuItem value={"ALARM_DIGITAL"}>Digital</MenuItem>
+                  <MenuItem value={"ALARM_KITCHEN"}>Kitchen</MenuItem>
+                  <MenuItem value={"ALARM_WOOD"}>Wood</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -195,21 +191,21 @@ export default function Settings() {
             </Grid>
             <Grid item xs={4}>
               <FormControl fullWidth size="small">
-                <InputLabel id="ticking-sound-type=label">Tích tắc</InputLabel>
+                <InputLabel id="ticking-sound=label">Tích tắc</InputLabel>
                 <Select
-                  labelId="ticking-sound-type-label"
-                  id="ticking-sound-type"
-                  value={newTickingSoundType}
+                  labelId="ticking-sound-label"
+                  id="ticking-sound"
+                  value={newTickingSound}
                   label="Âm thanh tích tắc"
-                  onChange={handleChangeTickingSoundType}
+                  onChange={handleChangeTickingSound}
                 >
-                  <MenuItem value={'TICKING_NONE'}>
+                  <MenuItem value={"TICKING_NONE"}>
                     <em>None</em>
                   </MenuItem>
-                  <MenuItem value={'TICKING_FAST'}>Ticking Fast</MenuItem>
-                  <MenuItem value={'TICKING_SLOW'}>Ticking Slow</MenuItem>
-                  <MenuItem value={'WHITE_NOISE'}>White Noise</MenuItem>
-                  <MenuItem value={'BROWN_NOISE'}>Brown Noise</MenuItem>
+                  <MenuItem value={"TICKING_FAST"}>Ticking Fast</MenuItem>
+                  <MenuItem value={"TICKING_SLOW"}>Ticking Slow</MenuItem>
+                  <MenuItem value={"WHITE_NOISE"}>White Noise</MenuItem>
+                  <MenuItem value={"BROWN_NOISE"}>Brown Noise</MenuItem>
                 </Select>
               </FormControl>
             </Grid>

@@ -15,7 +15,7 @@ export function player({ asset, volume = 0.5, loop = false }) {
   }
 
   const play = () => {
-    if (audio.paused || !audio.currentTime) {
+    if (audio.src && (audio.paused || !audio.currentTime)) {
       audio.play().catch(() => {});
     }
   };

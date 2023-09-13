@@ -17,7 +17,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 
-export default function Header(props) {
+export default function Header() {
   const [open, setOpen] = React.useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [notificationPermission, setNotificationPermission] = useState(null);
@@ -110,7 +110,7 @@ export default function Header(props) {
       <AppBar
         position="static"
         sx={{
-          backgroundColor: `${props.mode}.main`,
+          backgroundColor: `pomodoro.main`,
         }}
       >
         <Toolbar>
@@ -150,29 +150,27 @@ export default function Header(props) {
               {isFullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
             </IconButton>
           </Tooltip>
-          <Tooltip title="Cài đặt">
-            <IconButton
-              color="inherit"
-              aria-label="Settings"
-              onClick={handleClickOpen}
-            >
-              <SettingsIcon />
-            </IconButton>
-            <Dialog
-              open={open}
-              onClose={handleClose}
-              aria-labelledby="alert-dialog-title"
-              aria-describedby="alert-dialog-description"
-            >
-              <DialogTitle id="alert-dialog-title">Cài đặt</DialogTitle>
-              <DialogContent>
-                <Settings />
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={handleClose}>Đóng</Button>
-              </DialogActions>
-            </Dialog>
-          </Tooltip>
+          <IconButton
+            color="inherit"
+            aria-label="Settings"
+            onClick={handleClickOpen}
+          >
+            <SettingsIcon />
+          </IconButton>
+          <Dialog
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <DialogTitle id="alert-dialog-title">Cài đặt</DialogTitle>
+            <DialogContent>
+              <Settings />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleClose}>Đóng</Button>
+            </DialogActions>
+          </Dialog>
         </Toolbar>
       </AppBar>
       <Snackbar

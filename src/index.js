@@ -10,12 +10,16 @@ import { ThemeProvider } from "@mui/material/styles";
 import App from "./App";
 import theme from "./theme";
 import reportWebVitals from "./reportWebVitals";
+import { Provider } from "react-redux";
+import store from "./redux/store"; // Import Redux store
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <ThemeProvider theme={theme}>
     <CssBaseline />
-    <App />
+    <Provider store={store}>
+      <App />
+    </Provider>
   </ThemeProvider>
 );
 
