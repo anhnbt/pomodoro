@@ -173,7 +173,7 @@ export default function Header() {
           >
             <DialogTitle id="alert-dialog-title">Cài đặt</DialogTitle>
             <DialogContent>
-              <Settings ref={settingsRef} />
+              <Settings ref={settingsRef} handleDialogClose={handleClose} />
             </DialogContent>
             <DialogActions>
               <Button onClick={handleClose}>Đóng</Button>

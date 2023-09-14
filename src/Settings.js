@@ -13,7 +13,7 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import Grid from "@mui/material/Grid";
 import Divider from "@mui/material/Divider";
-import Snackbar from "@mui/material/Snackbar";
+import { useSnackbar } from './SnackbarContext'; // Import useSnackbar
 import { player } from "./player";
 import {
   ALARM_BELL,
@@ -79,18 +79,7 @@ const Settings = forwardRef((props, ref) => {
     currentSettings.autoStartEnabled
   );
 
-  const [state, setState] = React.useState({
-    open: false,
-    vertical: "top",
-    horizontal: "center",
-    msg: "",
-  });
-  
-  const { vertical, horizontal, openSnackbar, msg } = state;
-
-  const handleCloseSnackbar = () => {
-    setState({ ...state, openSnackbar: false });
-  };
+  const { openSnackbar } = useSnackbar();
 
   const handleSaveSettings = () => {
     // Thực hiện lưu các giá trị cài đặt vào Redux store và Local Storage
@@ -119,12 +108,8 @@ const Settings = forwardRef((props, ref) => {
     localStorage.setItem("autoStartEnabled", newAutoStartEnabled);
     alarmSound.stop();
     tickingSound.stop();
-    setState({
-      vertical: "bottom",
-      horizontal: "center",
-      openSnackbar: true,
-      msg: "Đã lưu cài đặt.",
-    });
+    openSnackbar('Đã lưu cài đặt.');
+    props.handleDialogClose();
   };
 
   // Truyền ref vào component con
@@ -360,14 +345,6 @@ const Settings = forwardRef((props, ref) => {
           </Box>
         </Box>
       </FormGroup>
-
-      <Snackbar
-        anchorOrigin={{ vertical, horizontal }}
-        open={openSnackbar}
-        onClose={handleCloseSnackbar}
-        message={msg}
-        key={vertical + horizontal}
-      />
     </div>
   );
 });
