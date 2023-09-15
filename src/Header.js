@@ -1,4 +1,4 @@
-import React, { useState, useRef  } from "react";
+import React, { useState, useRef } from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
@@ -10,28 +10,21 @@ import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
 import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import Tooltip from "@mui/material/Tooltip";
-import Snackbar from "@mui/material/Snackbar";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
-import { useSelector } from 'react-redux';
+import { useSelector } from "react-redux";
+import { useSnackbar } from './SnackbarContext';
 
 export default function Header() {
-
   const mode = useSelector((state) => state.mode);
   const [open, setOpen] = React.useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [notificationPermission, setNotificationPermission] = useState(null);
-  const [state, setState] = React.useState({
-    open: false,
-    vertical: "top",
-    horizontal: "center",
-    msg: "",
-  });
-  const { vertical, horizontal, openSnackbar, msg } = state;
   const settingsRef = useRef();
+  const { openSnackbar } = useSnackbar();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -39,10 +32,6 @@ export default function Header() {
 
   const handleClose = (value) => {
     setOpen(false);
-  };
-
-  const handleCloseSnackbar = () => {
-    setState({ ...state, openSnackbar: false });
   };
 
   // Hàm để toggle fullscreen
@@ -54,14 +43,12 @@ export default function Header() {
       } else if (element.mozRequestFullScreen) {
         element.mozRequestFullScreen();
       }
-      // ... (Các phương thức khác để yêu cầu fullscreen)
     } else {
       if (document.exitFullscreen) {
         document.exitFullscreen();
       } else if (document.mozCancelFullScreen) {
         document.mozCancelFullScreen();
       }
-      // ... (Các phương thức khác để thoát fullscreen)
     }
     setIsFullscreen(!isFullscreen); // Cập nhật trạng thái fullscreen
   };
@@ -82,30 +69,15 @@ export default function Header() {
         Notification.requestPermission().then((permission) => {
           setNotificationPermission(permission);
           if (permission === "granted") {
-            setState({
-              vertical: "bottom",
-              horizontal: "center",
-              openSnackbar: true,
-              msg: "Quyền thông báo đã được cấp.",
-            });
+            openSnackbar("Quyền thông báo đã được cấp.");
           } else {
-            setState({
-              vertical: "bottom",
-              horizontal: "center",
-              openSnackbar: true,
-              msg: "Quyền thông báo bị từ chối.",
-            });
+            openSnackbar("Quyền thông báo bị từ chối.");
           }
         });
       }
     } else {
       // Trình duyệt không hỗ trợ API Notification
-      setState({
-        vertical: "bottom",
-        horizontal: "center",
-        openSnackbar: true,
-        msg: "Trình duyệt của bạn không hỗ trợ thông báo.",
-      });
+      openSnackbar("Trình duyệt của bạn không hỗ trợ thông báo.");
     }
   };
 
@@ -177,18 +149,13 @@ export default function Header() {
             </DialogContent>
             <DialogActions>
               <Button onClick={handleClose}>Đóng</Button>
-              <Button variant="contained" onClick={handleSaveSettings}>Lưu cài đặt</Button>
+              <Button variant="contained" onClick={handleSaveSettings}>
+                Lưu cài đặt
+              </Button>
             </DialogActions>
           </Dialog>
         </Toolbar>
       </AppBar>
-      <Snackbar
-        anchorOrigin={{ vertical, horizontal }}
-        open={openSnackbar}
-        onClose={handleCloseSnackbar}
-        message={msg}
-        key={vertical + horizontal}
-      />
     </div>
   );
 }

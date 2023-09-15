@@ -27,12 +27,9 @@ export function SnackbarProvider({ children }) {
         open={snackbarOpen}
         onClose={handleClose}
         autoHideDuration={6000}
+        message={snackbarMessage}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert onClose={handleClose} severity="success" sx={{ width: "100%" }}>
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
+      />
     </SnackbarContext.Provider>
   );
 }

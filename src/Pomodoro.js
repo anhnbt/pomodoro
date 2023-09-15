@@ -101,29 +101,6 @@ function Pomodoro() {
   const mode = useSelector((state) => state.mode); // Đọc giá trị mode từ Redux store
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    // Kiểm tra xem trình duyệt hỗ trợ API Notification
-    if (
-      "Notification" in window &&
-      "serviceWorker" in navigator &&
-      "PushManager" in window
-    ) {
-      // Xin quyền thông báo khi component được tạo lần đầu
-      if (
-        Notification.permission !== "granted" &&
-        Notification.permission !== "denied"
-      ) {
-        Notification.requestPermission().then((permission) => {
-          if (permission === "granted") {
-            console.log("Quyền thông báo đã được cấp.");
-          } else {
-            console.log("Quyền thông báo bị từ chối.");
-          }
-        });
-      }
-    }
-  }, []); // [] đảm bảo rằng useEffect chỉ chạy một lần khi component được tạo ra lần đầu
-
   function sendNotification(title, body) {
     // Kiểm tra xem trình duyệt hỗ trợ API Notification không
     if (
