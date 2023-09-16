@@ -2,7 +2,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import {
     POMODORO
-  } from "../constants";
+  } from "../constants/appConfig";
 
 const modeSlice = createSlice({
   name: 'mode',

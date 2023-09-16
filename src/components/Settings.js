@@ -13,8 +13,8 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import Grid from "@mui/material/Grid";
 import Divider from "@mui/material/Divider";
-import { useSnackbar } from './SnackbarContext'; // Import useSnackbar
-import { player } from "./player";
+import { useSnackbar } from '../SnackbarContext'; // Import useSnackbar
+import { player } from "../utils/player";
 import {
   ALARM_BELL,
   ALARM_BIRD,
@@ -26,7 +26,7 @@ import {
   TICKING_SLOW,
   WHITE_NOISE,
   BROWN_NOISE,
-} from "./constants";
+} from "../constants/appConfig";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setPomodoroTime,
@@ -38,7 +38,7 @@ import {
   setHourFormat,
   setAutoStartPomodoroEnabled,
   setAutoStartEnabled,
-} from "./redux/settingsSlice";
+} from "../redux/settingsSlice";
 
 const alarmSound = player({
   asset: ALARM_DIGITAL,
@@ -241,8 +241,8 @@ const Settings = forwardRef((props, ref) => {
                 value={newVolume}
                 onChange={(e, value) => setNewVolume(value)}
                 min={0}
-                max={1}
-                step={0.01}
+                max={100}
+                step={1}
               />
               <VolumeUp />
             </Stack>

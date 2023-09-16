@@ -5,11 +5,11 @@ import {
   DEFAULT_POMODORO_TIME,
   DEFAULT_SHORT_BREAK_TIME,
   DEFAULT_LONG_BREAK_TIME
-} from "../constants";
+} from "../constants/appConfig";
 
 const initialState = {
   pomodoroTime: DEFAULT_POMODORO_TIME, // Giá trị mặc định cho thời gian Pomodoro (minutes)
-  volume: 0.5, // Giá trị mặc định cho âm lượng (từ 0 đến 1)
+  volume: 50, // Giá trị mặc định cho âm lượng (từ 0 đến 1)
   shortBreakTime: DEFAULT_SHORT_BREAK_TIME, // Giá trị mặc định cho thời gian nghỉ ngắn (minutes)
   longBreakTime: DEFAULT_LONG_BREAK_TIME, // Giá trị mặc định cho thời gian nghỉ dài (minutes)
   alarmSound: 'ALARM_DIGITAL', // Giá trị mặc định cho loại âm thanh báo động

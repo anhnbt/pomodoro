@@ -2,7 +2,7 @@ import {
   POMODORO,
   TIME_FOR_A_BREAK,
   TIME_TO_FOCUS,
-} from "./constants";
+} from "../constants/appConfig";
 
 
 export function formatTime(minutes, seconds) {

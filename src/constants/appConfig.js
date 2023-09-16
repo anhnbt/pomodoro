@@ -21,6 +21,13 @@ export const TICKING_SLOW = "audio/ticking/ticking-slow.mp3";
 export const WHITE_NOISE = "audio/ticking/white-noise.mp3";
 export const BROWN_NOISE = "audio/ticking/brown.mp3";
 export const NOTIFICATION = "audio/notification.mp3";
+export const AppConfig = {
+  pomodoroTime: 25, // Phút
+  shortBreakTime: 5, // Phút
+  longBreakTime: 15, // Phút
+  alarmSound: "default.mp3",
+  tickingSound: "ticking.mp3",
+};
 
 export {
   POMODORO,

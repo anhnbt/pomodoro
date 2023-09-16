@@ -16,7 +16,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import { useSelector } from "react-redux";
-import { useSnackbar } from './SnackbarContext';
+import { useSnackbar } from '../SnackbarContext';
 
 export default function Header() {
   const mode = useSelector((state) => state.mode);
