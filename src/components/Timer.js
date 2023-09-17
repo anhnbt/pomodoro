@@ -131,7 +131,7 @@ const Timer = (
     return () => {
       clearInterval(intervalRef.current);
     };
-  }, [ref, isRunning]);
+  }, [ref, isRunning, mode]);
 
   // Sử dụng useEffect để cập nhật giá trị minutes và seconds khi giá trị thay đổi
   useEffect(() => {
