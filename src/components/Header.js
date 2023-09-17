@@ -19,7 +19,7 @@ import { useSelector } from "react-redux";
 import { useSnackbar } from '../SnackbarContext';
 
 export default function Header() {
-  const mode = useSelector((state) => state.mode);
+  const mode = useSelector((state) => state.settings.mode);
   const [open, setOpen] = React.useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [notificationPermission, setNotificationPermission] = useState(null);
