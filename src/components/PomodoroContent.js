@@ -54,6 +54,7 @@ function PomodoroContent({
   tickingAudio,
   tickingSound,
   autoStartEnabled,
+  autoStartPomodoroEnabled,
   mode,
 }) {
   const [isRunning, setIsRunning] = useState(false);
@@ -146,6 +147,7 @@ function PomodoroContent({
         longBreakTime={longBreakTime}
         shortBreakTime={shortBreakTime}
         autoStartEnabled={autoStartEnabled}
+        autoStartPomodoroEnabled={autoStartPomodoroEnabled}
         ref={timerRef}
         isRunning={isRunning}
         mode={mode}
