@@ -41,7 +41,7 @@ function Pomodoro() {
   const autoStartEnabled = useSelector(
     (state) => state.settings.autoStartEnabled
   );
-  const mode = useSelector((state) => state.mode);
+  const mode = useSelector((state) => state.settings.mode);
   useEffect(() => {
     switch (alarmSound) {
       case "ALARM_BELL":

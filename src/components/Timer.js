@@ -1,8 +1,9 @@
 import React, { useState, useEffect, forwardRef, useRef } from "react";
 import CircularProgressWithLabel from "./CircularProgressWithLabel";
-import { setMode } from "../redux/modeSlice";
+import { setMode } from "../redux/settingsSlice";
 import { POMODORO, SHORT_BREAK, LONG_BREAK } from "../constants/appConfig";
 import { sendNotification } from "../utils/notifications";
+import { updateTitle, isMobileDevice } from "../utils/helperFunctions";
 
 const Timer = (
   {
@@ -154,7 +155,10 @@ const Timer = (
   useEffect(() => {
     const totalSeconds = minutes * 60 + seconds;
     currentDurationRef.current = totalSeconds;
-  }, [minutes, seconds]);
+    if (!isMobileDevice()) {
+      updateTitle(minutes, seconds, mode);
+    }
+  }, [minutes, seconds, mode]);
 
   return (
     <CircularProgressWithLabel

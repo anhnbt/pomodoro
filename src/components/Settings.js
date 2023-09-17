@@ -13,9 +13,10 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import Grid from "@mui/material/Grid";
 import Divider from "@mui/material/Divider";
-import { useSnackbar } from '../SnackbarContext'; // Import useSnackbar
+import { useSnackbar } from "../SnackbarContext"; // Import useSnackbar
 import { player } from "../utils/player";
 import {
+  POMODORO,
   ALARM_BELL,
   ALARM_BIRD,
   ALARM_DIGITAL,
@@ -92,23 +93,22 @@ const Settings = forwardRef((props, ref) => {
     dispatch(setHourFormat(newHourFormat));
     dispatch(setAutoStartPomodoroEnabled(newAutoStartPomodoroEnabled));
     dispatch(setAutoStartEnabled(newAutoStartEnabled));
-
-    // Lưu vào Local Storage (bạn cần xử lý lưu vào Local Storage ở đây)
-    localStorage.setItem("pomodoroTime", newPomodoroTime);
-    localStorage.setItem("volume", newVolume);
-    localStorage.setItem("shortBreakTime", newShortBreakTime);
-    localStorage.setItem("longBreakTime", newLongBreakTime);
-    localStorage.setItem("alarmSound", newAlarmSound);
-    localStorage.setItem("tickingSound", newTickingSound);
-    localStorage.setItem("hourFormat", newHourFormat);
-    localStorage.setItem(
-      "autoStartPomodoroEnabled",
-      newAutoStartPomodoroEnabled
-    );
-    localStorage.setItem("autoStartEnabled", newAutoStartEnabled);
+    const savedSettings = {
+      pomodoroTime: newPomodoroTime,
+      volume: newVolume,
+      shortBreakTime: newShortBreakTime,
+      longBreakTime: newLongBreakTime,
+      alarmSound: newAlarmSound,
+      tickingSound: newTickingSound,
+      hourFormat: newHourFormat,
+      autoStartPomodoroEnabled: newAutoStartPomodoroEnabled,
+      autoStartEnabled: newAutoStartEnabled,
+      mode: POMODORO,
+    };
+    localStorage.setItem("settings", JSON.stringify(savedSettings));
     alarmSound.stop();
     tickingSound.stop();
-    openSnackbar('Đã lưu cài đặt.');
+    openSnackbar("Đã lưu cài đặt.");
     props.handleDialogClose();
   };
 

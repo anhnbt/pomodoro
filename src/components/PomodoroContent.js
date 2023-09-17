@@ -7,7 +7,7 @@ import Button from "@mui/material/Button";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import { styled } from "@mui/material/styles";
-import { setMode } from "../redux/modeSlice";
+import { setMode } from "../redux/settingsSlice";
 import { POMODORO, SHORT_BREAK, LONG_BREAK } from "../constants/appConfig";
 import { player } from "../utils/player";
 
