@@ -54,6 +54,7 @@ const settingsSlice = createSlice({
       state.autoStartEnabled = action.payload;
     },
     setMode: (state, action) => {
+      console.log('setMode', action.payload);
       state.mode = action.payload;
     },
   },

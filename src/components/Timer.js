@@ -30,11 +30,13 @@ const Timer = (
 
   useEffect(() => {
     const handleTimerEnd = () => {
-      handleResetClick();
+      console.log("autoStartEnabled", autoStartEnabled);
+      console.log("autoStartPomodoroEnabled", autoStartPomodoroEnabled);
       switch (mode) {
         case POMODORO:
           sendNotification("Pomodoro kết thúc", "Hãy nghỉ ngắn 5 phút!");
           if (autoStartEnabled) {
+            console.log("Pomodoro kết thúc autoStartEnabled", autoStartEnabled);
             setMode(SHORT_BREAK); // Chuyển sang chế độ Short Break
             startTimer(); // Bắt đầu đếm ngược cho Short Break
           }
@@ -42,6 +44,7 @@ const Timer = (
         case SHORT_BREAK:
           sendNotification("Nghỉ kết thúc", "Bắt đầu Pomodoro tiếp theo!");
           if (autoStartPomodoroEnabled) {
+            console.log("SHORT_BREAK kết thúc autoStartEnabled", autoStartPomodoroEnabled);
             setMode(POMODORO); // Chuyển lại chế độ Pomodoro
             startTimer(); // Bắt đầu đếm ngược cho Pomodoro
           }
@@ -49,7 +52,8 @@ const Timer = (
         case LONG_BREAK:
           sendNotification("Nghỉ kết thúc", "Bắt đầu Pomodoro tiếp theo!");
           if (autoStartPomodoroEnabled) {
-            setMode(POMODORO); // Chuyển lại chế độ Pomodoro
+            console.log("LONG_BREAK kết thúc autoStartEnabled", autoStartEnabled);
+            setMode(POMODORO); // Chuyển lại chế độ autoStartPomodoroEnabled
             startTimer(); // Bắt đầu đếm ngược cho Pomodoro
           }
           break;
@@ -58,14 +62,17 @@ const Timer = (
       }
       alarmAudio.play();
       tickingAudio.stop();
+      handleResetClick();
     };
 
     const startTimer = () => {
+      console.log("startTimer", mode);
       const updateTimer = (duration) => {
         setMinutes(Math.floor(duration / 60));
         setSeconds(duration % 60);
       };
       const handleCountdown = () => {
+        console.log("handleCountdown");
         let totalSecondsInMode;
         if (currentDurationRef.current > 0) {
           currentDurationRef.current -= 1;
@@ -132,7 +139,19 @@ const Timer = (
     return () => {
       clearInterval(intervalRef.current);
     };
-  }, [ref, isRunning, mode]);
+  }, [
+    ref,
+    isRunning,
+    mode,
+    pomodoroTime,
+    shortBreakTime,
+    longBreakTime,
+    alarmAudio,
+    autoStartEnabled,
+    autoStartPomodoroEnabled,
+    handleResetClick,
+    tickingAudio,
+  ]);
 
   // Sử dụng useEffect để cập nhật giá trị minutes và seconds khi giá trị thay đổi
   useEffect(() => {
