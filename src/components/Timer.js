@@ -17,6 +17,7 @@ const Timer = (
     mode,
     alarmAudio,
     tickingAudio,
+    tickingSound
   },
   ref
 ) => {
@@ -24,105 +25,47 @@ const Timer = (
   const [seconds, setSeconds] = useState(0);
   const [progressBarValue, setProgressBarValue] = useState(0);
   const [totalSecondsInMode, setTotalSecondsInMode] = useState(0);
+  const [currentDuration, setCurrentDuration] = useState(0);
 
   useEffect(() => {
-    const handleTimerEnd = () => {
-      console.log("autoStartEnabled", autoStartEnabled);
-      console.log("autoStartPomodoroEnabled", autoStartPomodoroEnabled);
-      switch (mode) {
-        case POMODORO:
-          sendNotification("Pomodoro kết thúc", "Hãy nghỉ ngắn 5 phút!");
-          if (autoStartEnabled) {
-            console.log("Pomodoro kết thúc autoStartEnabled", autoStartEnabled);
-            setMode(SHORT_BREAK); // Chuyển sang chế độ Short Break
-            startTimer(); // Bắt đầu đếm ngược cho Short Break
-          }
-          break;
-        case SHORT_BREAK:
-          sendNotification("Nghỉ kết thúc", "Bắt đầu Pomodoro tiếp theo!");
-          if (autoStartPomodoroEnabled) {
-            console.log(
-              "SHORT_BREAK kết thúc autoStartEnabled",
-              autoStartPomodoroEnabled
-            );
-            setMode(POMODORO); // Chuyển lại chế độ Pomodoro
-            startTimer(); // Bắt đầu đếm ngược cho Pomodoro
-          }
-          break;
-        case LONG_BREAK:
-          sendNotification("Nghỉ kết thúc", "Bắt đầu Pomodoro tiếp theo!");
-          if (autoStartPomodoroEnabled) {
-            console.log(
-              "LONG_BREAK kết thúc autoStartEnabled",
-              autoStartEnabled
-            );
-            setMode(POMODORO); // Chuyển lại chế độ autoStartPomodoroEnabled
-            startTimer(); // Bắt đầu đếm ngược cho Pomodoro
-          }
-          break;
-        default:
-          break;
-      }
-      alarmAudio.play();
-      tickingAudio.stop();
-      handleResetClick();
-    };
-
     const startTimer = () => {
-      const handleCountdown = () => {
-        console.log("handleCountdown");
-        let totalSeconds;
-        switch (mode) {
-          case POMODORO:
-            totalSeconds = pomodoroTime * 60; // 25 phút cho Pomodoro
-            break;
-          case SHORT_BREAK:
-            totalSeconds = shortBreakTime * 60; // 5 phút cho Short Break
-            break;
-          case LONG_BREAK:
-            totalSeconds = longBreakTime * 60; // 15 phút cho Long Break
-            break;
-          default:
-            break;
-        }
-        console.log("totalSeconds", totalSeconds);
-        setTotalSecondsInMode(totalSeconds);
-        navigator.serviceWorker.controller.postMessage({
-          time: totalSeconds,
-        }); // Chuyển thời gian thành giây
-      };
-
-      handleCountdown();
+      navigator.serviceWorker.controller.postMessage({
+        time: currentDuration > 0 ? currentDuration : totalSecondsInMode,
+      });
+      if (tickingSound !== "TICKING_NONE") {
+        tickingAudio.play(); // Phát âm thanh tiếng đồng hồ khi bật
+      }
     };
 
     const pauseTimer = () => {
-      // clearInterval(intervalRef.current);
       // Gửi thông điệp "Pause" đến service worker
       navigator.serviceWorker.controller.postMessage({ type: "Pause" });
     };
 
     const resetTimer = () => {
-      // clearInterval(intervalRef.current);
       // Gửi thông điệp "Reset" đến service worker
       navigator.serviceWorker.controller.postMessage({ type: "Reset" });
       // Cập nhật thời gian
       switch (mode) {
         case POMODORO:
           setMinutes(pomodoroTime);
+          setTotalSecondsInMode(pomodoroTime * 60);
           break;
         case SHORT_BREAK:
           setMinutes(shortBreakTime);
+          setTotalSecondsInMode(shortBreakTime * 60);
           break;
         case LONG_BREAK:
           setMinutes(longBreakTime);
+          setTotalSecondsInMode(longBreakTime * 60);
           break;
         default:
           break;
       }
       setSeconds(0);
-
       // Cập nhật giá trị progressBarValue
       setProgressBarValue(0);
+      setCurrentDuration(0);
     };
     ref.current = {
       start: startTimer,
@@ -136,11 +79,8 @@ const Timer = (
     pomodoroTime,
     shortBreakTime,
     longBreakTime,
-    alarmAudio,
-    autoStartEnabled,
-    autoStartPomodoroEnabled,
-    handleResetClick,
-    tickingAudio,
+    currentDuration,
+    totalSecondsInMode,
   ]);
 
   // Sử dụng useEffect để cập nhật giá trị minutes và seconds khi giá trị thay đổi
@@ -148,17 +88,22 @@ const Timer = (
     switch (mode) {
       case POMODORO:
         setMinutes(pomodoroTime);
+        setTotalSecondsInMode(pomodoroTime * 60);
         break;
       case SHORT_BREAK:
         setMinutes(shortBreakTime);
+        setTotalSecondsInMode(shortBreakTime * 60);
         break;
       case LONG_BREAK:
         setMinutes(longBreakTime);
+        setTotalSecondsInMode(longBreakTime * 60);
         break;
       default:
         break;
     }
     setSeconds(0);
+    setCurrentDuration(0);
+    setProgressBarValue(0);
   }, [pomodoroTime, shortBreakTime, longBreakTime, mode]);
 
   useEffect(() => {
@@ -172,6 +117,7 @@ const Timer = (
       navigator.serviceWorker.addEventListener("message", (event) => {
         if (event.data.type === "countdown") {
           const updateTimer = (duration) => {
+            setCurrentDuration(duration);
             setMinutes(Math.floor(duration / 60));
             setSeconds(duration % 60);
           };
@@ -182,14 +128,27 @@ const Timer = (
           setProgressBarValue(progress);
 
           updateTimer(countdownTime);
-          console.log(`Countdown time remaining: ${countdownTime} seconds`);
         } else if (event.data.type === "countdownFinished") {
           // Nhận thông điệp countdownFinished và xử lý nó ở đây
-          console.log("Countdown finished!");
+          switch (mode) {
+            case POMODORO:
+              sendNotification("Pomodoro kết thúc", "Hãy nghỉ ngắn 5 phút!");
+              break;
+            case SHORT_BREAK:
+              sendNotification("Nghỉ kết thúc", "Bắt đầu Pomodoro tiếp theo!");
+              break;
+            case LONG_BREAK:
+              sendNotification("Nghỉ kết thúc", "Bắt đầu Pomodoro tiếp theo!");
+              break;
+            default:
+              break;
+          }
+          alarmAudio.play();
+          handleResetClick();
         }
       });
     }
-  }, []);
+  }, [alarmAudio, totalSecondsInMode, handleResetClick, mode]);
 
   return (
     <CircularProgressWithLabel

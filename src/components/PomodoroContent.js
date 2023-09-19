@@ -69,15 +69,13 @@ function PomodoroContent({
     };
 
     setIsRunning((prevIsRunning) => {
-      if (!prevIsRunning && tickingSound !== "TICKING_NONE") {
-        tickingAudio.play(); // Phát âm thanh tiếng đồng hồ khi bật
-      } else {
+      if (prevIsRunning) {
         tickingAudio.stop(); // Dừng âm thanh khi tắt
       }
       playClickSound(); // Phát âm thanh trước khi thay đổi isRunning
       return !prevIsRunning; // Sử dụng prevState để đảm bảo tính toàn vẹn
     });
-  }, [tickingAudio, tickingSound]);
+  }, [tickingAudio]);
 
   // Cập nhật hàm toggleTimer vào useEffect
   useEffect(() => {
@@ -153,6 +151,7 @@ function PomodoroContent({
         mode={mode}
         alarmAudio={alarmAudio}
         tickingAudio={tickingAudio}
+        tickingSound={tickingSound}
         handleResetClick={handleResetClick}
       />
       <div className="controls">
