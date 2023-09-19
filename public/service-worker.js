@@ -1,11 +1,11 @@
 /* eslint-disable no-restricted-globals */
 let countdownInterval;
-let remainingTimeInSeconds = 0; // Thời gian còn lại tính bằng giâ
+let remainingTimeInSeconds = 0; // Thời gian còn lại tính bằng giây
+let isRequestPending = false;
 self.addEventListener("message", function (event) {
   if (event.data && event.data.time) {
     // Nhận tham số thời gian từ thông điệp
     const countdownTimeInSeconds = event.data.time;
-    console.log('countdownTimeInSeconds ', countdownTimeInSeconds);
     // Xử lý thời gian ở đây (ví dụ: bắt đầu đếm ngược)
     countdown(countdownTimeInSeconds);
   }
@@ -32,29 +32,35 @@ function resetCountdown() {
 function countdown(countdownTimeInSeconds) {
   remainingTimeInSeconds = countdownTimeInSeconds;
   countdownInterval = setInterval(function () {
-    console.log('remainingTimeInSeconds', remainingTimeInSeconds);
     if (remainingTimeInSeconds > 0) {
       remainingTimeInSeconds--;
-      console.log('countdown ', remainingTimeInSeconds);
       // Gửi thông điệp về giao diện người dùng (React app) để cập nhật UI
-      self.clients.matchAll().then((clients) => {
-        clients.forEach((client) => {
-          client.postMessage({
-            type: "countdown",
-            time: remainingTimeInSeconds,
-          });
+      if (!isRequestPending) {
+        isRequestPending = true;
+        self.clients.matchAll().then((clients) => {
+          if (clients && clients.length > 0) {
+            clients[0].postMessage({
+              type: "countdown",
+              time: remainingTimeInSeconds,
+            });
+            isRequestPending = false;
+          }
         });
-      });
+      }
     } else {
-      console.log('countdownFinished', 'countdownFinished');
       // Đếm ngược đã kết thúc, thực hiện các hành động sau khi kết thúc đếm ngược
       pauseCountdown();
-      // Gửi thông điệp về giao diện người dùng (React app) để thông báo kết thúc đếm ngược
-      self.clients.matchAll().then((clients) => {
-        clients.forEach((client) => {
-          client.postMessage({ type: "countdownFinished" });
+      if (!isRequestPending) {
+        isRequestPending = true;
+        // Gửi thông điệp về giao diện người dùng (React app) để thông báo kết thúc đếm ngược
+        self.clients.matchAll().then((clients) => {
+          if (clients && clients.length > 0) {
+            // Gửi tin nhắn đến tab hoặc bản gốc đầu tiên
+            clients[0].postMessage({ type: "countdownFinished" });
+            isRequestPending = false;
+          }
         });
-      });
+      }
     }
   }, 1000);
 }

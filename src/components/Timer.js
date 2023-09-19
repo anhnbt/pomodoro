@@ -17,7 +17,7 @@ const Timer = (
     mode,
     alarmAudio,
     tickingAudio,
-    tickingSound
+    tickingSound,
   },
   ref
 ) => {
@@ -29,9 +29,18 @@ const Timer = (
 
   useEffect(() => {
     const startTimer = () => {
-      navigator.serviceWorker.controller.postMessage({
-        time: currentDuration > 0 ? currentDuration : totalSecondsInMode,
-      });
+      // Kiểm tra nếu service worker đã được đăng ký
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.ready.then(function (registration) {
+          // Kiểm tra nếu service worker đã kích hoạt
+          if (registration.active) {
+            // Gửi tin nhắn đến service worker
+            registration.active.postMessage({
+              time: currentDuration > 0 ? currentDuration : totalSecondsInMode,
+            });
+          }
+        });
+      }
       if (tickingSound !== "TICKING_NONE") {
         tickingAudio.play(); // Phát âm thanh tiếng đồng hồ khi bật
       }
@@ -39,12 +48,31 @@ const Timer = (
 
     const pauseTimer = () => {
       // Gửi thông điệp "Pause" đến service worker
-      navigator.serviceWorker.controller.postMessage({ type: "Pause" });
+      // Kiểm tra nếu service worker đã được đăng ký
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.ready.then(function (registration) {
+          // Kiểm tra nếu service worker đã kích hoạt
+          if (registration.active) {
+            // Gửi tin nhắn đến service worker
+            registration.active.postMessage({ type: "Pause" });
+          }
+        });
+      }
     };
 
     const resetTimer = () => {
       // Gửi thông điệp "Reset" đến service worker
-      navigator.serviceWorker.controller.postMessage({ type: "Reset" });
+      // Kiểm tra nếu service worker đã được đăng ký
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.ready.then(function (registration) {
+          // Kiểm tra nếu service worker đã kích hoạt
+          if (registration.active) {
+            // Gửi tin nhắn đến service worker
+            registration.active.postMessage({ type: "Reset" });
+          }
+        });
+      }
+
       // Cập nhật thời gian
       switch (mode) {
         case POMODORO:
