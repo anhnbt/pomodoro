@@ -10,6 +10,7 @@ Tiện ích Pomodoro - đồng hồ đếm ngược giúp tập trung học bài
 
 - Github: https://github.com/anhnbt/pomodoro
 - Chrome Web Store: https://chrome.google.com/webstore/detail/pomodoro-vietnam/cdoeecbgcpafccmfjckhpiebflicpekg
+- Web: https://pomodoro.anhnbt.com
 
 ## Build Setup
 
