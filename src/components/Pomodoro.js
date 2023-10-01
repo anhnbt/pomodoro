@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   ALARM_BELL,
   ALARM_BIRD,
@@ -15,6 +15,7 @@ import { useSelector } from "react-redux";
 import PomodoroInfo from "./PomodoroInfo";
 import PomodoroContent from "./PomodoroContent";
 import { player } from "../utils/player";
+import SplashScreen from "./SplashScreen";
 
 const alarmAudio = player({
   asset: ALARM_DIGITAL,
@@ -42,6 +43,14 @@ function Pomodoro() {
     (state) => state.settings.autoStartEnabled
   );
   const mode = useSelector((state) => state.settings.mode);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+  }, []);
+
   useEffect(() => {
     switch (alarmSound) {
       case "ALARM_BELL":
@@ -89,17 +98,22 @@ function Pomodoro() {
 
   return (
     <div className="pomodoro-app">
-      <PomodoroContent
-        pomodoroTime={pomodoroTime}
-        shortBreakTime={shortBreakTime}
-        longBreakTime={longBreakTime}
-        alarmAudio={alarmAudio}
-        tickingSound={tickingSound}
-        tickingAudio={tickingAudio}
-        autoStartPomodoroEnabled={autoStartPomodoroEnabled}
-        autoStartEnabled={autoStartEnabled}
-        mode={mode}
-      />
+      {isLoading ? (
+        <SplashScreen />
+      ) : (
+        <PomodoroContent
+          pomodoroTime={pomodoroTime}
+          shortBreakTime={shortBreakTime}
+          longBreakTime={longBreakTime}
+          alarmAudio={alarmAudio}
+          tickingSound={tickingSound}
+          tickingAudio={tickingAudio}
+          autoStartPomodoroEnabled={autoStartPomodoroEnabled}
+          autoStartEnabled={autoStartEnabled}
+          mode={mode}
+        />
+      )}
+
       <PomodoroInfo />
     </div>
   );
