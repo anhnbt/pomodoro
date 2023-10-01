@@ -100,6 +100,13 @@ function PomodoroContent({
     timerRef.current.reset();
   };
 
+  // Hàm bắt sự kiện khi bấm nút Reset
+  const handleAutoStart = () => {
+    console.log('auto start nhe');
+    clickSound.play();
+    setIsRunning(true);
+  };
+
   const switchMode = (event, newMode) => {
     // Ngừng timer nếu đang chạy
     setIsRunning(false);
@@ -110,6 +117,7 @@ function PomodoroContent({
   // Sử dụng useEffect để theo dõi giá trị isRunning và thực hiện các tương tác với Timer.js
   useEffect(() => {
     if (isRunning) {
+      console.log('Vao dayyyyyyyyyyyy');
       // Bắt đầu đếm ngược khi isRunning là true
       timerRef.current.start();
     } else {
@@ -153,6 +161,7 @@ function PomodoroContent({
         tickingAudio={tickingAudio}
         tickingSound={tickingSound}
         handleResetClick={handleResetClick}
+        handleAutoStart={handleAutoStart}
       />
       <div className="controls">
         <Stack direction="row" spacing={2} justifyContent="center">

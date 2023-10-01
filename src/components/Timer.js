@@ -4,6 +4,7 @@ import { setMode } from "../redux/settingsSlice";
 import { POMODORO, SHORT_BREAK, LONG_BREAK } from "../constants/appConfig";
 import { sendNotification } from "../utils/notifications";
 import { updateTitle, isMobileDevice } from "../utils/helperFunctions";
+import { useDispatch } from "react-redux";
 
 const Timer = (
   {
@@ -13,6 +14,7 @@ const Timer = (
     autoStartPomodoroEnabled,
     autoStartEnabled,
     handleResetClick,
+    handleAutoStart,
     isRunning,
     mode,
     alarmAudio,
@@ -27,42 +29,53 @@ const Timer = (
   const currentDurationRef = useRef(0);
   // Sử dụng một biến tham chiếu riêng để lưu interval
   const intervalRef = useRef(null);
+  const dispatch = useDispatch();
 
   useEffect(() => {
+    console.log("mode", mode, 'running', isRunning);
     const handleTimerEnd = () => {
       console.log("autoStartEnabled", autoStartEnabled);
       console.log("autoStartPomodoroEnabled", autoStartPomodoroEnabled);
+      alarmAudio.play();
+      tickingAudio.stop();
+      handleResetClick();
       switch (mode) {
         case POMODORO:
           sendNotification("Pomodoro kết thúc", "Hãy nghỉ ngắn 5 phút!");
           if (autoStartEnabled) {
             console.log("Pomodoro kết thúc autoStartEnabled", autoStartEnabled);
-            setMode(SHORT_BREAK); // Chuyển sang chế độ Short Break
-            startTimer(); // Bắt đầu đếm ngược cho Short Break
+            dispatch(setMode(SHORT_BREAK)); // Chuyển sang chế độ Short Break
+            console.log('GOi vao day ko');
+            handleAutoStart(); // Bắt đầu đếm ngược cho Short Break
           }
           break;
         case SHORT_BREAK:
           sendNotification("Nghỉ kết thúc", "Bắt đầu Pomodoro tiếp theo!");
           if (autoStartPomodoroEnabled) {
-            console.log("SHORT_BREAK kết thúc autoStartEnabled", autoStartPomodoroEnabled);
-            setMode(POMODORO); // Chuyển lại chế độ Pomodoro
-            startTimer(); // Bắt đầu đếm ngược cho Pomodoro
+            console.log(
+              "SHORT_BREAK kết thúc autoStartEnabled",
+              autoStartPomodoroEnabled
+            );
+            dispatch(setMode(POMODORO)); // Chuyển lại chế độ Pomodoro
+            console.log('GOi vao day ko');
+            handleAutoStart(); // Bắt đầu đếm ngược cho Pomodoro
           }
           break;
         case LONG_BREAK:
           sendNotification("Nghỉ kết thúc", "Bắt đầu Pomodoro tiếp theo!");
           if (autoStartPomodoroEnabled) {
-            console.log("LONG_BREAK kết thúc autoStartEnabled", autoStartEnabled);
-            setMode(POMODORO); // Chuyển lại chế độ autoStartPomodoroEnabled
-            startTimer(); // Bắt đầu đếm ngược cho Pomodoro
+            console.log(
+              "LONG_BREAK kết thúc autoStartEnabled",
+              autoStartEnabled
+            );
+            dispatch(setMode(POMODORO)); // Chuyển lại chế độ Pomodoro
+            console.log('GOi vao day ko');
+            handleAutoStart(); // Bắt đầu đếm ngược cho Pomodoro
           }
           break;
         default:
           break;
       }
-      alarmAudio.play();
-      tickingAudio.stop();
-      handleResetClick();
     };
 
     const startTimer = () => {
