@@ -1,8 +1,8 @@
 {
   "name": "pomodoro",
   "version": "1.0.0",
-  "description": "Tiện ích Pomodoro - đồng hồ đếm ngược giúp tập trung học bài trong 25 phút",
-  "main": "script.js",
+  "description": "Tiện ích Pomodoro - đồng hồ đếm ngược",
+  "homepage": "https://pomodoro.codingwithwanbi.com/",
   "repository": "https://github.com/anhnbt/pomodoro.git",
   "author": "Nguyễn Bá Tuấn Anh <anhnbt.it@gmail.com>",
   "license": "MIT",
@@ -30,7 +30,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
@@ -49,5 +51,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "gh-pages": "^6.1.1"
   }
 }
