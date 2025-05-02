@@ -1,11 +1,11 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 import {
   POMODORO,
   DEFAULT_POMODORO_TIME,
   DEFAULT_SHORT_BREAK_TIME,
   DEFAULT_LONG_BREAK_TIME,
-} from "../constants/appConfig";
-const savedSettings = localStorage.getItem("settings");
+} from '../constants/appConfig';
+const savedSettings = localStorage.getItem('settings');
 
 const initialState = savedSettings
   ? JSON.parse(savedSettings)
@@ -14,16 +14,18 @@ const initialState = savedSettings
       volume: 50, // Giá trị mặc định cho âm lượng (từ 0 đến 1)
       shortBreakTime: DEFAULT_SHORT_BREAK_TIME, // Giá trị mặc định cho thời gian nghỉ ngắn (minutes)
       longBreakTime: DEFAULT_LONG_BREAK_TIME, // Giá trị mặc định cho thời gian nghỉ dài (minutes)
-      alarmSound: "ALARM_DIGITAL", // Giá trị mặc định cho loại âm thanh báo động
-      tickingSound: "TICKING_NONE", // Giá trị mặc định cho loại âm thanh đồng hồ
-      hourFormat: "12", // Giá trị mặc định cho định dạng giờ (12 hoặc 24)
+      alarmSound: 'ALARM_DIGITAL', // Giá trị mặc định cho loại âm thanh báo động
+      tickingSound: 'TICKING_NONE', // Giá trị mặc định cho loại âm thanh đồng hồ
+      hourFormat: '12', // Giá trị mặc định cho định dạng giờ (12 hoặc 24)
       autoStartPomodoroEnabled: false, // Tự động bắt đầu Pomodoro khi ứng dụng mở
       autoStartEnabled: false, // Tự động bắt đầu khi kết thúc Pomodoro hoặc nghỉ
       mode: POMODORO,
+      isDarkMode: false, // New state for dark mode
+      statistics: [], // New state for tracking statistics
     };
 
 const settingsSlice = createSlice({
-  name: "settings",
+  name: 'settings',
   initialState,
   reducers: {
     setPomodoroTime: (state, action) => {
@@ -57,6 +59,15 @@ const settingsSlice = createSlice({
       console.log('setMode', action.payload);
       state.mode = action.payload;
     },
+    setDarkMode: (state, action) => {
+      state.isDarkMode = action.payload;
+    },
+    addStatistics: (state, action) => {
+      // Thêm một mục thống kê mới vào mảng statistics immutably
+      console.log('action.payload', action.payload);
+      console.log('state.statistics', state.statistics);
+      state.statistics = [...state.statistics, action.payload];
+    },
   },
 });
 
@@ -71,6 +82,8 @@ export const {
   setAutoStartPomodoroEnabled,
   setAutoStartEnabled,
   setMode,
+  setDarkMode,
+  addStatistics,
 } = settingsSlice.actions;
 
 export default settingsSlice.reducer;

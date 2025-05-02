@@ -1,10 +1,17 @@
-import React, { useState, useEffect, forwardRef, useRef } from "react";
-import CircularProgressWithLabel from "./CircularProgressWithLabel";
-import { setMode } from "../redux/settingsSlice";
-import { POMODORO, SHORT_BREAK, LONG_BREAK } from "../constants/appConfig";
-import { sendNotification } from "../utils/notifications";
-import { updateTitle, isMobileDevice } from "../utils/helperFunctions";
-import { useDispatch } from "react-redux";
+import React, {
+  useState,
+  useEffect,
+  forwardRef,
+  useRef,
+  useCallback,
+} from 'react';
+import CircularProgressWithLabel from './CircularProgressWithLabel';
+import { setMode } from '../redux/settingsSlice';
+import { POMODORO, SHORT_BREAK, LONG_BREAK } from '../constants/appConfig';
+import { sendNotification } from '../utils/notifications';
+import { updateTitle, isMobileDevice } from '../utils/helperFunctions';
+import { useDispatch } from 'react-redux';
+import { useHandleTimerEnd } from '../utils/timerHooks';
 
 const Timer = (
   {
@@ -19,188 +26,86 @@ const Timer = (
     mode,
     alarmAudio,
     tickingAudio,
+    onTimerEnd, // New prop to handle timer end externally
   },
   ref
 ) => {
-  const [minutes, setMinutes] = useState(pomodoroTime);
-  const [seconds, setSeconds] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(pomodoroTime * 60); // Store time in seconds
   const [progressBarValue, setProgressBarValue] = useState(0);
-  // Biến để theo dõi thời gian còn lại
-  const currentDurationRef = useRef(0);
-  // Sử dụng một biến tham chiếu riêng để lưu interval
   const intervalRef = useRef(null);
   const dispatch = useDispatch();
 
+  const calculateProgress = useCallback(() => {
+    const totalTime =
+      mode === POMODORO
+        ? pomodoroTime * 60
+        : mode === SHORT_BREAK
+        ? shortBreakTime * 60
+        : longBreakTime * 60;
+    return ((totalTime - timeLeft) / totalTime) * 100;
+  }, [timeLeft, mode, pomodoroTime, shortBreakTime, longBreakTime]);
+
   useEffect(() => {
-    console.log("mode", mode, 'running', isRunning);
-    const handleTimerEnd = () => {
-      console.log("autoStartEnabled", autoStartEnabled);
-      console.log("autoStartPomodoroEnabled", autoStartPomodoroEnabled);
-      alarmAudio.play();
-      tickingAudio.stop();
-      handleResetClick();
-      switch (mode) {
-        case POMODORO:
-          sendNotification("Pomodoro kết thúc", "Hãy nghỉ ngắn 5 phút!");
-          if (autoStartEnabled) {
-            console.log("Pomodoro kết thúc autoStartEnabled", autoStartEnabled);
-            dispatch(setMode(SHORT_BREAK)); // Chuyển sang chế độ Short Break
-            console.log('GOi vao day ko');
-            handleAutoStart(); // Bắt đầu đếm ngược cho Short Break
-          }
-          break;
-        case SHORT_BREAK:
-          sendNotification("Nghỉ kết thúc", "Bắt đầu Pomodoro tiếp theo!");
-          if (autoStartPomodoroEnabled) {
-            console.log(
-              "SHORT_BREAK kết thúc autoStartEnabled",
-              autoStartPomodoroEnabled
-            );
-            dispatch(setMode(POMODORO)); // Chuyển lại chế độ Pomodoro
-            console.log('GOi vao day ko');
-            handleAutoStart(); // Bắt đầu đếm ngược cho Pomodoro
-          }
-          break;
-        case LONG_BREAK:
-          sendNotification("Nghỉ kết thúc", "Bắt đầu Pomodoro tiếp theo!");
-          if (autoStartPomodoroEnabled) {
-            console.log(
-              "LONG_BREAK kết thúc autoStartEnabled",
-              autoStartEnabled
-            );
-            dispatch(setMode(POMODORO)); // Chuyển lại chế độ Pomodoro
-            console.log('GOi vao day ko');
-            handleAutoStart(); // Bắt đầu đếm ngược cho Pomodoro
-          }
-          break;
-        default:
-          break;
-      }
-    };
+    setProgressBarValue(calculateProgress());
+  }, [timeLeft, calculateProgress]);
 
-    const startTimer = () => {
-      console.log("startTimer", mode);
-      const updateTimer = (duration) => {
-        setMinutes(Math.floor(duration / 60));
-        setSeconds(duration % 60);
-      };
-      const handleCountdown = () => {
-        console.log("handleCountdown");
-        let totalSecondsInMode;
-        if (currentDurationRef.current > 0) {
-          currentDurationRef.current -= 1;
-          switch (mode) {
-            case POMODORO:
-              totalSecondsInMode = pomodoroTime * 60; // 25 phút cho Pomodoro
-              break;
-            case SHORT_BREAK:
-              totalSecondsInMode = shortBreakTime * 60; // 5 phút cho Short Break
-              break;
-            case LONG_BREAK:
-              totalSecondsInMode = longBreakTime * 60; // 15 phút cho Long Break
-              break;
-            default:
-              break;
-          }
-          const progress =
-            ((totalSecondsInMode - currentDurationRef.current) /
-              totalSecondsInMode) *
-            100;
-          setProgressBarValue(progress);
+  const startTimer = useCallback(() => {
+    if (intervalRef.current) return; // Prevent multiple intervals
 
-          updateTimer(currentDurationRef.current);
-        } else {
-          clearInterval(ref.current);
-          handleTimerEnd();
+    intervalRef.current = setInterval(() => {
+      setTimeLeft((prevTimeLeft) => {
+        if (prevTimeLeft <= 1) {
+          clearInterval(intervalRef.current);
+          intervalRef.current = null;
+          onTimerEnd();
+          return 0;
         }
-      };
+        return prevTimeLeft - 1;
+      });
+    }, 1000);
+  }, [onTimerEnd]);
 
-      intervalRef.current = setInterval(handleCountdown, 1000);
-    };
+  const pauseTimer = useCallback(() => {
+    clearInterval(intervalRef.current);
+    intervalRef.current = null;
+  }, []);
 
-    const pauseTimer = () => {
-      clearInterval(intervalRef.current);
-    };
-
-    const resetTimer = () => {
-      clearInterval(intervalRef.current);
-      // Cập nhật thời gian
-      switch (mode) {
-        case POMODORO:
-          setMinutes(pomodoroTime);
-          break;
-        case SHORT_BREAK:
-          setMinutes(shortBreakTime);
-          break;
-        case LONG_BREAK:
-          setMinutes(longBreakTime);
-          break;
-        default:
-          break;
-      }
-      setSeconds(0);
-
-      // Cập nhật giá trị progressBarValue
-      setProgressBarValue(0);
-    };
-    ref.current = {
-      start: startTimer,
-      pause: pauseTimer,
-      reset: resetTimer,
-    };
-
-    return () => {
-      clearInterval(intervalRef.current);
-    };
-  }, [
-    ref,
-    isRunning,
-    mode,
-    pomodoroTime,
-    shortBreakTime,
-    longBreakTime,
-    alarmAudio,
-    autoStartEnabled,
-    autoStartPomodoroEnabled,
-    handleResetClick,
-    tickingAudio,
-  ]);
-
-  // Sử dụng useEffect để cập nhật giá trị minutes và seconds khi giá trị thay đổi
-  useEffect(() => {
-    switch (mode) {
-      case POMODORO:
-        setMinutes(pomodoroTime);
-        break;
-      case SHORT_BREAK:
-        setMinutes(shortBreakTime);
-        break;
-      case LONG_BREAK:
-        setMinutes(longBreakTime);
-        break;
-      default:
-        break;
-    }
-    setSeconds(0);
-  }, [pomodoroTime, shortBreakTime, longBreakTime, mode]);
+  const resetTimer = useCallback(() => {
+    clearInterval(intervalRef.current);
+    intervalRef.current = null;
+    const initialTime =
+      mode === POMODORO
+        ? pomodoroTime * 60
+        : mode === SHORT_BREAK
+        ? shortBreakTime * 60
+        : longBreakTime * 60;
+    setTimeLeft(initialTime);
+    setProgressBarValue(0);
+  }, [mode, pomodoroTime, shortBreakTime, longBreakTime]);
 
   useEffect(() => {
-    const totalSeconds = minutes * 60 + seconds;
-    currentDurationRef.current = totalSeconds;
-    if (!isMobileDevice()) {
-      updateTitle(minutes, seconds, mode);
-    }
-  }, [minutes, seconds, mode]);
+    ref.current = { start: startTimer, pause: pauseTimer, reset: resetTimer };
+    return () => clearInterval(intervalRef.current);
+  }, [startTimer, pauseTimer, resetTimer, ref]);
+
+  useEffect(() => {
+    const initialTime =
+      mode === POMODORO
+        ? pomodoroTime * 60
+        : mode === SHORT_BREAK
+        ? shortBreakTime * 60
+        : longBreakTime * 60;
+    setTimeLeft(initialTime);
+  }, [mode, pomodoroTime, shortBreakTime, longBreakTime]);
 
   return (
     <CircularProgressWithLabel
-      minutes={minutes}
-      seconds={seconds}
+      minutes={Math.floor(timeLeft / 60)}
+      seconds={timeLeft % 60}
       variant="determinate"
       value={progressBarValue}
     />
   );
 };
 
-// Sử dụng React.forwardRef để chuyển tiếp ref từ Props
 export default forwardRef(Timer);

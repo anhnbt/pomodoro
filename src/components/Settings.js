@@ -1,20 +1,20 @@
-import React, { useState, forwardRef } from "react";
-import Stack from "@mui/material/Stack";
-import Slider from "@mui/material/Slider";
-import VolumeDown from "@mui/icons-material/VolumeDown";
-import VolumeUp from "@mui/icons-material/VolumeUp";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Switch from "@mui/material/Switch";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
-import Grid from "@mui/material/Grid";
-import Divider from "@mui/material/Divider";
-import TextField from "@mui/material/TextField";
-import { useSnackbar } from "../SnackbarContext"; // Import useSnackbar
-import { player } from "../utils/player";
+import React, { useState, forwardRef } from 'react';
+import Stack from '@mui/material/Stack';
+import Slider from '@mui/material/Slider';
+import VolumeDown from '@mui/icons-material/VolumeDown';
+import VolumeUp from '@mui/icons-material/VolumeUp';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Switch from '@mui/material/Switch';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import Grid from '@mui/material/Grid';
+import Divider from '@mui/material/Divider';
+import TextField from '@mui/material/TextField';
+import { useSnackbar } from '../SnackbarContext'; // Import useSnackbar
+import { player } from '../utils/player';
 import {
   POMODORO,
   ALARM_BELL,
@@ -27,8 +27,8 @@ import {
   TICKING_SLOW,
   WHITE_NOISE,
   BROWN_NOISE,
-} from "../constants/appConfig";
-import { useDispatch, useSelector } from "react-redux";
+} from '../constants/appConfig';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   setPomodoroTime,
   setVolume,
@@ -39,7 +39,7 @@ import {
   setHourFormat,
   setAutoStartPomodoroEnabled,
   setAutoStartEnabled,
-} from "../redux/settingsSlice";
+} from '../redux/settingsSlice';
 
 const alarmSound = player({
   asset: ALARM_DIGITAL,
@@ -88,7 +88,7 @@ const Settings = forwardRef((props, ref) => {
       newShortBreakTime <= 0 ||
       newLongBreakTime <= 0
     ) {
-      openSnackbar("Các giá trị thời gian không hợp lệ, vui lòng nhập lại.");
+      openSnackbar('Các giá trị thời gian không hợp lệ, vui lòng nhập lại.');
       return;
     }
     // Thực hiện lưu các giá trị cài đặt vào Redux store và Local Storage
@@ -112,11 +112,13 @@ const Settings = forwardRef((props, ref) => {
       autoStartPomodoroEnabled: newAutoStartPomodoroEnabled,
       autoStartEnabled: newAutoStartEnabled,
       mode: POMODORO,
+      isDarkMode: currentSettings.isDarkMode,
+      statistics: currentSettings.statistics,
     };
-    localStorage.setItem("settings", JSON.stringify(savedSettings));
+    localStorage.setItem('settings', JSON.stringify(savedSettings));
     alarmSound.stop();
     tickingSound.stop();
-    openSnackbar("Đã lưu cài đặt.");
+    openSnackbar('Đã lưu cài đặt.');
     props.handleDialogClose();
   };
 
@@ -128,19 +130,19 @@ const Settings = forwardRef((props, ref) => {
   const handleChangeAlarmSound = (event) => {
     setNewAlarmSound(event.target.value);
     switch (event.target.value) {
-      case "ALARM_BELL":
+      case 'ALARM_BELL':
         alarmSound.setAudio(ALARM_BELL);
         break;
-      case "ALARM_BIRD":
+      case 'ALARM_BIRD':
         alarmSound.setAudio(ALARM_BIRD);
         break;
-      case "ALARM_DIGITAL":
+      case 'ALARM_DIGITAL':
         alarmSound.setAudio(ALARM_DIGITAL);
         break;
-      case "ALARM_KITCHEN":
+      case 'ALARM_KITCHEN':
         alarmSound.setAudio(ALARM_KITCHEN);
         break;
-      case "ALARM_WOOD":
+      case 'ALARM_WOOD':
         alarmSound.setAudio(ALARM_WOOD);
         break;
       default:
@@ -152,24 +154,24 @@ const Settings = forwardRef((props, ref) => {
   const handleChangeTickingSound = (event) => {
     setNewTickingSound(event.target.value);
     switch (event.target.value) {
-      case "TICKING_FAST":
+      case 'TICKING_FAST':
         tickingSound.setAudio(TICKING_FAST);
         break;
-      case "TICKING_SLOW":
+      case 'TICKING_SLOW':
         tickingSound.setAudio(TICKING_SLOW);
         break;
-      case "WHITE_NOISE":
+      case 'WHITE_NOISE':
         tickingSound.setAudio(WHITE_NOISE);
         break;
-      case "BROWN_NOISE":
+      case 'BROWN_NOISE':
         tickingSound.setAudio(BROWN_NOISE);
         break;
-      case "TICKING_NONE":
+      case 'TICKING_NONE':
       default:
         tickingSound.setAudio(TICKING_NONE);
         break;
     }
-    if (event.target.value !== "TICKING_NONE") {
+    if (event.target.value !== 'TICKING_NONE') {
       tickingSound.play();
     } else {
       tickingSound.stop();
@@ -180,9 +182,9 @@ const Settings = forwardRef((props, ref) => {
     <Box
       component="form"
       sx={{
-        width: "100%",
+        width: '100%',
         maxWidth: 500,
-        bgcolor: "background.paper",
+        bgcolor: 'background.paper',
       }}
       noValidate
       autoComplete="off"
@@ -211,11 +213,11 @@ const Settings = forwardRef((props, ref) => {
                 label="Âm thanh tích tắc"
                 onChange={handleChangeAlarmSound}
               >
-                <MenuItem value={"ALARM_BELL"}>Bell</MenuItem>
-                <MenuItem value={"ALARM_BIRD"}>Bird</MenuItem>
-                <MenuItem value={"ALARM_DIGITAL"}>Digital</MenuItem>
-                <MenuItem value={"ALARM_KITCHEN"}>Kitchen</MenuItem>
-                <MenuItem value={"ALARM_WOOD"}>Wood</MenuItem>
+                <MenuItem value={'ALARM_BELL'}>Bell</MenuItem>
+                <MenuItem value={'ALARM_BIRD'}>Bird</MenuItem>
+                <MenuItem value={'ALARM_DIGITAL'}>Digital</MenuItem>
+                <MenuItem value={'ALARM_KITCHEN'}>Kitchen</MenuItem>
+                <MenuItem value={'ALARM_WOOD'}>Wood</MenuItem>
               </Select>
             </FormControl>
           </Grid>
@@ -232,13 +234,13 @@ const Settings = forwardRef((props, ref) => {
                 label="Âm thanh tích tắc"
                 onChange={handleChangeTickingSound}
               >
-                <MenuItem value={"TICKING_NONE"}>
+                <MenuItem value={'TICKING_NONE'}>
                   <em>None</em>
                 </MenuItem>
-                <MenuItem value={"TICKING_FAST"}>Ticking Fast</MenuItem>
-                <MenuItem value={"TICKING_SLOW"}>Ticking Slow</MenuItem>
-                <MenuItem value={"WHITE_NOISE"}>White Noise</MenuItem>
-                <MenuItem value={"BROWN_NOISE"}>Brown Noise</MenuItem>
+                <MenuItem value={'TICKING_FAST'}>Ticking Fast</MenuItem>
+                <MenuItem value={'TICKING_SLOW'}>Ticking Slow</MenuItem>
+                <MenuItem value={'WHITE_NOISE'}>White Noise</MenuItem>
+                <MenuItem value={'BROWN_NOISE'}>Brown Noise</MenuItem>
               </Select>
             </FormControl>
           </Grid>
@@ -304,7 +306,7 @@ const Settings = forwardRef((props, ref) => {
               onChange={() =>
                 setNewAutoStartPomodoroEnabled(!newAutoStartPomodoroEnabled)
               }
-              inputProps={{ "aria-label": "newAutoStartPomodoroEnabled" }}
+              inputProps={{ 'aria-label': 'newAutoStartPomodoroEnabled' }}
             />
           </Grid>
           <Grid item xs={10}>
@@ -314,7 +316,7 @@ const Settings = forwardRef((props, ref) => {
             <Switch
               checked={newAutoStartEnabled}
               onChange={() => setNewAutoStartEnabled(!newAutoStartEnabled)}
-              inputProps={{ "aria-label": "newAutoStartEnabled" }}
+              inputProps={{ 'aria-label': 'newAutoStartEnabled' }}
             />
           </Grid>
         </Grid>
@@ -338,8 +340,8 @@ const Settings = forwardRef((props, ref) => {
                 value={newHourFormat}
                 onChange={(e) => setNewHourFormat(e.target.value)}
               >
-                <MenuItem value={"12"}>12 Giờ</MenuItem>
-                <MenuItem value={"24"}>24 Giờ</MenuItem>
+                <MenuItem value={'12'}>12 Giờ</MenuItem>
+                <MenuItem value={'24'}>24 Giờ</MenuItem>
               </Select>
             </FormControl>
           </Grid>

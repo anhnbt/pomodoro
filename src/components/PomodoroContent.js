@@ -1,15 +1,16 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import { useDispatch } from "react-redux";
-import Timer from "./Timer";
-import Box from "@mui/material/Box";
-import Stack from "@mui/material/Stack";
-import Button from "@mui/material/Button";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import { styled } from "@mui/material/styles";
-import { setMode } from "../redux/settingsSlice";
-import { POMODORO, SHORT_BREAK, LONG_BREAK } from "../constants/appConfig";
-import { player } from "../utils/player";
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useDispatch } from 'react-redux';
+import Timer from './Timer';
+import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import { styled } from '@mui/material/styles';
+import { setMode, addStatistics } from '../redux/settingsSlice';
+import { POMODORO, SHORT_BREAK, LONG_BREAK } from '../constants/appConfig';
+import { player } from '../utils/player';
+import { useHandleTimerEnd } from '../utils/timerHooks';
 
 const StyledTabs = styled((props) => (
   <Tabs
@@ -17,32 +18,32 @@ const StyledTabs = styled((props) => (
     TabIndicatorProps={{ children: <span className="MuiTabs-indicatorSpan" /> }}
   />
 ))({
-  "& .MuiTabs-indicator": {
-    display: "flex",
-    justifyContent: "center",
-    backgroundColor: "transparent",
+  '& .MuiTabs-indicator': {
+    display: 'flex',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
   },
-  "& .MuiTabs-indicatorSpan": {
-    width: "100%",
-    backgroundColor: "rgb(255, 255, 255)",
+  '& .MuiTabs-indicatorSpan': {
+    width: '100%',
+    backgroundColor: 'rgb(255, 255, 255)',
   },
 });
 
 const StyledTab = styled((props) => <Tab disableRipple {...props} />)(
   ({ theme }) => ({
-    textTransform: "none",
-    color: "rgba(255, 255, 255, 0.7)",
-    "&.Mui-selected": {
-      color: "#fff",
+    textTransform: 'none',
+    color: 'rgba(255, 255, 255, 0.7)',
+    '&.Mui-selected': {
+      color: '#fff',
     },
-    "&.Mui-focusVisible": {
-      backgroundColor: "rgba(100, 95, 228, 0.32)",
+    '&.Mui-focusVisible': {
+      backgroundColor: 'rgba(100, 95, 228, 0.32)',
     },
   })
 );
 
 const clickSound = player({
-  asset: "audio/button-press.wav",
+  asset: 'audio/button-press.wav',
   volume: 0.5,
 });
 
@@ -80,21 +81,22 @@ function PomodoroContent({
   // Cập nhật hàm toggleTimer vào useEffect
   useEffect(() => {
     const handleSpacebarPress = (event) => {
-      if (event.key === " ") {
+      if (event.key === ' ') {
         event.preventDefault(); // Ngăn trình duyệt scroll mặc định
         toggleTimer();
       }
     };
 
-    document.addEventListener("keydown", handleSpacebarPress);
+    document.addEventListener('keydown', handleSpacebarPress);
 
     return () => {
-      document.removeEventListener("keydown", handleSpacebarPress);
+      document.removeEventListener('keydown', handleSpacebarPress);
     };
   }, [toggleTimer]);
 
   // Hàm bắt sự kiện khi bấm nút Reset
   const handleResetClick = () => {
+    console.log('reset nhe');
     setIsRunning(false);
     tickingAudio.stop();
     timerRef.current.reset();
@@ -114,6 +116,24 @@ function PomodoroContent({
     dispatch(setMode(newMode));
   };
 
+  const handleTimerEnd = useHandleTimerEnd({
+    alarmAudio,
+    tickingAudio,
+    handleResetClick: () => {
+      setTimeout(() => handleResetClick(), 0); // Delay reset logic
+    },
+    handleAutoStart: () => {
+      setTimeout(() => handleAutoStart(), 0); // Delay auto-start logic
+    },
+    autoStartEnabled,
+    autoStartPomodoroEnabled,
+    mode,
+    pomodoroTime,
+    shortBreakTime,
+    longBreakTime,
+    dispatch,
+  });
+
   // Sử dụng useEffect để theo dõi giá trị isRunning và thực hiện các tương tác với Timer.js
   useEffect(() => {
     if (isRunning) {
@@ -130,10 +150,10 @@ function PomodoroContent({
     <Box
       sx={{
         py: 2,
-        minHeight: "calc(100vh - 64px)",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
+        minHeight: 'calc(100vh - 64px)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
         backgroundColor: `${mode}.main`,
       }}
     >
@@ -162,6 +182,7 @@ function PomodoroContent({
         tickingSound={tickingSound}
         handleResetClick={handleResetClick}
         handleAutoStart={handleAutoStart}
+        onTimerEnd={handleTimerEnd} // New prop
       />
       <div className="controls">
         <Stack direction="row" spacing={2} justifyContent="center">
@@ -171,7 +192,7 @@ function PomodoroContent({
             onClick={toggleTimer}
             color="secondary"
           >
-            {isRunning ? "Tạm dừng" : "Bắt đầu"}
+            {isRunning ? 'Tạm dừng' : 'Bắt đầu'}
           </Button>
           <Button onClick={handleResetClick} size="large" color="secondary">
             Đặt lại
