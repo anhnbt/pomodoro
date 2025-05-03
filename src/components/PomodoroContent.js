@@ -11,6 +11,11 @@ import { setMode, addStatistics } from '../redux/settingsSlice';
 import { POMODORO, SHORT_BREAK, LONG_BREAK } from '../constants/appConfig';
 import { player } from '../utils/player';
 import { useHandleTimerEnd } from '../utils/timerHooks';
+import { motion } from 'framer-motion';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import PauseIcon from '@mui/icons-material/Pause';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import Slide from '@mui/material/Slide';
 
 const StyledTabs = styled((props) => (
   <Tabs
@@ -47,6 +52,8 @@ const clickSound = player({
   volume: 0.5,
 });
 
+const MotionButton = motion(Button);
+
 function PomodoroContent({
   pomodoroTime,
   shortBreakTime,
@@ -59,9 +66,8 @@ function PomodoroContent({
   mode,
 }) {
   const [isRunning, setIsRunning] = useState(false);
+  const [showControls, setShowControls] = useState(true);
   const dispatch = useDispatch();
-
-  // Sử dụng useRef để lưu trữ timerRef
   const timerRef = useRef(null);
 
   const toggleTimer = useCallback(() => {
@@ -71,18 +77,19 @@ function PomodoroContent({
 
     setIsRunning((prevIsRunning) => {
       if (prevIsRunning) {
-        tickingAudio.stop(); // Dừng âm thanh khi tắt
+        tickingAudio.stop();
+      } else if (tickingSound !== 'TICKING_NONE') {
+        tickingAudio.play();
       }
-      playClickSound(); // Phát âm thanh trước khi thay đổi isRunning
-      return !prevIsRunning; // Sử dụng prevState để đảm bảo tính toàn vẹn
+      playClickSound();
+      return !prevIsRunning;
     });
-  }, [tickingAudio]);
+  }, [tickingAudio, tickingSound]);
 
-  // Cập nhật hàm toggleTimer vào useEffect
   useEffect(() => {
     const handleSpacebarPress = (event) => {
       if (event.key === ' ') {
-        event.preventDefault(); // Ngăn trình duyệt scroll mặc định
+        event.preventDefault();
         toggleTimer();
       }
     };
@@ -94,36 +101,44 @@ function PomodoroContent({
     };
   }, [toggleTimer]);
 
-  // Hàm bắt sự kiện khi bấm nút Reset
-  const handleResetClick = () => {
-    console.log('reset nhe');
+  const handleResetClick = useCallback(() => {
     setIsRunning(false);
     tickingAudio.stop();
     timerRef.current.reset();
-  };
+    clickSound.play();
+  }, [tickingAudio]);
 
-  // Hàm bắt sự kiện khi bấm nút Reset
-  const handleAutoStart = () => {
-    console.log('auto start nhe');
+  const handleAutoStart = useCallback(() => {
     clickSound.play();
     setIsRunning(true);
-  };
+    if (tickingSound !== 'TICKING_NONE') {
+      tickingAudio.play();
+    }
+  }, [clickSound, tickingAudio, tickingSound]);
 
-  const switchMode = (event, newMode) => {
-    // Ngừng timer nếu đang chạy
-    setIsRunning(false);
-    // Cập nhật chế độ và thời gian
-    dispatch(setMode(newMode));
-  };
+  const switchMode = useCallback(
+    (event, newMode) => {
+      if (newMode === null) return;
+
+      setIsRunning(false);
+      tickingAudio.stop();
+
+      dispatch(setMode(newMode));
+
+      setShowControls(false);
+      setTimeout(() => setShowControls(true), 300);
+    },
+    [dispatch, tickingAudio]
+  );
 
   const handleTimerEnd = useHandleTimerEnd({
     alarmAudio,
     tickingAudio,
     handleResetClick: () => {
-      setTimeout(() => handleResetClick(), 0); // Delay reset logic
+      setTimeout(() => handleResetClick(), 0);
     },
     handleAutoStart: () => {
-      setTimeout(() => handleAutoStart(), 0); // Delay auto-start logic
+      setTimeout(() => handleAutoStart(), 0);
     },
     autoStartEnabled,
     autoStartPomodoroEnabled,
@@ -134,17 +149,20 @@ function PomodoroContent({
     dispatch,
   });
 
-  // Sử dụng useEffect để theo dõi giá trị isRunning và thực hiện các tương tác với Timer.js
   useEffect(() => {
     if (isRunning) {
-      console.log('Vao dayyyyyyyyyyyy');
-      // Bắt đầu đếm ngược khi isRunning là true
       timerRef.current.start();
     } else {
-      // Dừng đếm ngược khi isRunning là false
       timerRef.current.pause();
     }
   }, [isRunning]);
+
+  const buttonVariants = {
+    initial: { scale: 0.9, opacity: 0 },
+    animate: { scale: 1, opacity: 1 },
+    hover: { scale: 1.05, boxShadow: '0px 5px 10px rgba(0, 0, 0, 0.2)' },
+    tap: { scale: 0.95 },
+  };
 
   return (
     <Box
@@ -155,6 +173,7 @@ function PomodoroContent({
         flexDirection: 'column',
         alignItems: 'center',
         backgroundColor: `${mode}.main`,
+        transition: 'background-color 0.5s ease-in-out',
       }}
     >
       <StyledTabs
@@ -163,44 +182,108 @@ function PomodoroContent({
         value={mode}
         onChange={switchMode}
         centered
+        sx={{
+          mb: 3,
+          '& .MuiTab-root': {
+            transition: 'all 0.3s ease',
+            fontSize: '1rem',
+            fontWeight: 500,
+            minWidth: 100,
+            borderRadius: '20px',
+            mx: 0.5,
+            '&.Mui-selected': {
+              backgroundColor: 'rgba(255, 255, 255, 0.15)',
+              backdropFilter: 'blur(10px)',
+            },
+            '&:hover': {
+              backgroundColor: 'rgba(255, 255, 255, 0.1)',
+            },
+          },
+        }}
       >
         <StyledTab value={POMODORO} label="Pomodoro" />
         <StyledTab value={SHORT_BREAK} label="Nghỉ ngắn" />
         <StyledTab value={LONG_BREAK} label="Nghỉ dài" />
       </StyledTabs>
-      <Timer
-        pomodoroTime={pomodoroTime}
-        longBreakTime={longBreakTime}
-        shortBreakTime={shortBreakTime}
-        autoStartEnabled={autoStartEnabled}
-        autoStartPomodoroEnabled={autoStartPomodoroEnabled}
-        ref={timerRef}
-        isRunning={isRunning}
-        mode={mode}
-        alarmAudio={alarmAudio}
-        tickingAudio={tickingAudio}
-        tickingSound={tickingSound}
-        handleResetClick={handleResetClick}
-        handleAutoStart={handleAutoStart}
-        onTimerEnd={handleTimerEnd} // New prop
-      />
-      <div className="controls">
-        <Stack direction="row" spacing={2} justifyContent="center">
-          <Button
-            variant="contained"
-            size="large"
-            onClick={toggleTimer}
-            color="secondary"
-          >
-            {isRunning ? 'Tạm dừng' : 'Bắt đầu'}
-          </Button>
-          <Button onClick={handleResetClick} size="large" color="secondary">
-            Đặt lại
-          </Button>
-        </Stack>
-      </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <Timer
+          pomodoroTime={pomodoroTime}
+          longBreakTime={longBreakTime}
+          shortBreakTime={shortBreakTime}
+          autoStartEnabled={autoStartEnabled}
+          autoStartPomodoroEnabled={autoStartPomodoroEnabled}
+          ref={timerRef}
+          isRunning={isRunning}
+          mode={mode}
+          alarmAudio={alarmAudio}
+          tickingAudio={tickingAudio}
+          tickingSound={tickingSound}
+          handleResetClick={handleResetClick}
+          handleAutoStart={handleAutoStart}
+          onTimerEnd={handleTimerEnd}
+        />
+      </motion.div>
+
+      <Slide
+        direction="up"
+        in={showControls}
+        mountOnEnter
+        unmountOnExit
+        timeout={300}
+      >
+        <Box className="controls" sx={{ mt: 4 }}>
+          <Stack direction="row" spacing={3} justifyContent="center">
+            <MotionButton
+              variants={buttonVariants}
+              initial="initial"
+              animate="animate"
+              whileHover="hover"
+              whileTap="tap"
+              variant="contained"
+              size="large"
+              onClick={toggleTimer}
+              color="secondary"
+              sx={{
+                borderRadius: '50px',
+                px: 4,
+                boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)',
+              }}
+              endIcon={isRunning ? <PauseIcon /> : <PlayArrowIcon />}
+            >
+              {isRunning ? 'Tạm dừng' : 'Bắt đầu'}
+            </MotionButton>
+
+            <MotionButton
+              variants={buttonVariants}
+              initial="initial"
+              animate="animate"
+              whileHover="hover"
+              whileTap="tap"
+              onClick={handleResetClick}
+              size="large"
+              color="secondary"
+              sx={{
+                borderRadius: '50px',
+                minWidth: '110px',
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                '&:hover': {
+                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                },
+              }}
+              startIcon={<RestartAltIcon />}
+            >
+              Đặt lại
+            </MotionButton>
+          </Stack>
+        </Box>
+      </Slide>
     </Box>
   );
 }
 
-export default PomodoroContent;
+export default React.memo(PomodoroContent);
