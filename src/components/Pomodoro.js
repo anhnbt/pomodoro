@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   ALARM_BELL,
   ALARM_BIRD,
@@ -10,12 +10,12 @@ import {
   TICKING_SLOW,
   WHITE_NOISE,
   BROWN_NOISE,
-} from "../constants/appConfig";
-import { useSelector } from "react-redux";
-import PomodoroInfo from "./PomodoroInfo";
-import PomodoroContent from "./PomodoroContent";
-import { player } from "../utils/player";
-import SplashScreen from "./SplashScreen";
+} from '../constants/appConfig';
+import { useSelector } from 'react-redux';
+import PomodoroInfo from './PomodoroInfo';
+import PomodoroContent from './PomodoroContent';
+import { player } from '../utils/player';
+import SplashScreen from './SplashScreen';
 
 const alarmAudio = player({
   asset: ALARM_DIGITAL,
@@ -53,48 +53,48 @@ function Pomodoro() {
 
   useEffect(() => {
     switch (alarmSound) {
-      case "ALARM_BELL":
+      case 'ALARM_BELL':
         alarmAudio.setAudio(ALARM_BELL);
         break;
-      case "ALARM_BIRD":
+      case 'ALARM_BIRD':
         alarmAudio.setAudio(ALARM_BIRD);
         break;
-      case "ALARM_DIGITAL":
+      case 'ALARM_DIGITAL':
         alarmAudio.setAudio(ALARM_DIGITAL);
         break;
-      case "ALARM_KITCHEN":
+      case 'ALARM_KITCHEN':
         alarmAudio.setAudio(ALARM_KITCHEN);
         break;
-      case "ALARM_WOOD":
+      case 'ALARM_WOOD':
         alarmAudio.setAudio(ALARM_WOOD);
         break;
       default:
         break;
     }
     alarmAudio.setVolume(volume);
-  }, [alarmSound, volume]);
+  }, [alarmSound, volume, alarmAudio]);
 
   useEffect(() => {
     switch (tickingSound) {
-      case "TICKING_FAST":
+      case 'TICKING_FAST':
         tickingAudio.setAudio(TICKING_FAST);
         break;
-      case "TICKING_SLOW":
+      case 'TICKING_SLOW':
         tickingAudio.setAudio(TICKING_SLOW);
         break;
-      case "WHITE_NOISE":
+      case 'WHITE_NOISE':
         tickingAudio.setAudio(WHITE_NOISE);
         break;
-      case "BROWN_NOISE":
+      case 'BROWN_NOISE':
         tickingAudio.setAudio(BROWN_NOISE);
         break;
-      case "TICKING_NONE":
+      case 'TICKING_NONE':
       default:
         tickingAudio.setAudio(TICKING_NONE);
         break;
     }
     tickingAudio.setVolume(volume);
-  }, [tickingSound, volume]);
+  }, [tickingSound, volume, tickingAudio]);
 
   return (
     <div className="pomodoro-app">

@@ -10,7 +10,7 @@ import CircularProgressWithLabel from './CircularProgressWithLabel';
 import { setMode } from '../redux/settingsSlice';
 import { POMODORO, SHORT_BREAK, LONG_BREAK } from '../constants/appConfig';
 import { sendNotification } from '../utils/notifications';
-import { updateTitle, isMobileDevice } from '../utils/helperFunctions';
+import { updateTitle } from '../utils/helperFunctions';
 import { useDispatch } from 'react-redux';
 import { useHandleTimerEnd } from '../utils/timerHooks';
 

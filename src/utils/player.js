@@ -5,7 +5,7 @@ export function player({ asset, volume = 0.5, loop = false }) {
 
   if (loop) {
     audio.addEventListener(
-      "ended",
+      'ended',
       () => {
         audio.currentTime = 0;
         audio.play();
@@ -24,7 +24,9 @@ export function player({ asset, volume = 0.5, loop = false }) {
     audio.pause();
   };
 
-  const setVolume = (value) => (audio.volume = value / 100);
+  const setVolume = (value) => {
+    audio.volume = value / 100;
+  };
 
   const setAudio = (src) => {
     audio.src = src;
